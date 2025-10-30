@@ -11,7 +11,6 @@
             box-sizing: border-box;
         }
 
-
         body {
             font-family: 'Courier New', monospace;
             background: #0a0a0a;
@@ -19,6 +18,7 @@
             overflow: hidden;
         }
 
+        /* Home Screen */
         #home-screen {
             display: flex;
             flex-direction: column;
@@ -28,8 +28,13 @@
             background: radial-gradient(circle at center, #1a0a0a 0%, #000000 100%);
             text-align: center;
             padding: 2rem;
+            opacity: 1;
+            transition: opacity 0.5s;
         }
 
+        #home-screen.fade-out {
+            opacity: 0;
+        }
 
         .home-title {
             font-size: 3.5rem;
@@ -37,8 +42,14 @@
             text-shadow: 0 0 30px rgba(139, 125, 125, 0.7);
             letter-spacing: 0.3rem;
             margin-bottom: 1rem;
+            animation: flicker 3s infinite;
         }
 
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            41%, 43% { opacity: 0.8; }
+            50% { opacity: 0.95; }
+        }
 
         .home-subtitle {
             font-size: 1.2rem;
@@ -48,7 +59,6 @@
             text-shadow: 0 0 10px rgba(102, 102, 102, 0.5);
         }
 
-
         .home-description {
             max-width: 600px;
             font-size: 1rem;
@@ -56,7 +66,6 @@
             line-height: 1.8;
             margin-bottom: 3rem;
         }
-
 
         .start-button {
             background: rgba(139, 125, 125, 0.3);
@@ -72,13 +81,11 @@
             letter-spacing: 0.2rem;
         }
 
-
         .start-button:hover {
             background: rgba(139, 125, 125, 0.5);
             box-shadow: 0 0 30px rgba(139, 125, 125, 0.4);
             transform: scale(1.05);
         }
-
 
         .warning-text {
             margin-top: 2rem;
@@ -87,6 +94,7 @@
             font-style: italic;
         }
 
+        /* Opening Scene */
         #opening-scene {
             display: none;
             flex-direction: column;
@@ -94,13 +102,14 @@
             align-items: center;
             height: 100vh;
             background: radial-gradient(circle at center, #1a0a0a 0%, #000000 100%);
+            opacity: 0;
+            transition: opacity 0.5s;
         }
-
 
         #opening-scene.active {
             display: flex;
+            opacity: 1;
         }
-
 
         .terminal-text {
             font-size: 1.5rem;
@@ -108,8 +117,13 @@
             text-shadow: 0 0 20px rgba(139, 125, 125, 0.5);
             margin-bottom: 2rem;
             letter-spacing: 0.2rem;
+            animation: pulse 2s infinite;
         }
 
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
 
         .loading-bar {
             width: 300px;
@@ -120,14 +134,214 @@
             box-shadow: 0 0 10px rgba(139, 125, 125, 0.2);
         }
 
-
         .loading-progress {
             width: 0%;
             height: 100%;
             background: #8b7d7d;
             box-shadow: 0 0 10px rgba(139, 125, 125, 0.8);
+            transition: width 0.1s linear;
         }
 
+        /* Chat Interface */
+        #chat-screen {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            background: radial-gradient(circle at center, #1a0a0a 0%, #000000 100%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        #chat-screen.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .chat-header {
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(139, 125, 125, 0.3);
+        }
+
+        .chat-title {
+            font-size: 1.5rem;
+            color: #8b7d7d;
+            text-shadow: 0 0 20px rgba(139, 125, 125, 0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .chat-status {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 80%;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            align-items: flex-end;
+        }
+
+        .message.spirit {
+            align-self: flex-start;
+            align-items: flex-start;
+        }
+
+        .message-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+        }
+
+        .message-content {
+            padding: 1rem 1.5rem;
+            border-radius: 5px;
+            line-height: 1.6;
+        }
+
+        .message.user .message-content {
+            background: rgba(139, 125, 125, 0.2);
+            border: 1px solid rgba(139, 125, 125, 0.3);
+            color: #ccc;
+        }
+
+        .message.spirit .message-content {
+            background: rgba(139, 125, 125, 0.1);
+            border: 1px solid rgba(139, 125, 125, 0.4);
+            color: #8b7d7d;
+            box-shadow: 0 0 20px rgba(139, 125, 125, 0.2);
+        }
+
+        .spirit-typing {
+            display: none;
+            align-self: flex-start;
+            padding: 1rem 1.5rem;
+            background: rgba(139, 125, 125, 0.1);
+            border: 1px solid rgba(139, 125, 125, 0.4);
+            border-radius: 5px;
+            color: #8b7d7d;
+        }
+
+        .spirit-typing.active {
+            display: block;
+        }
+
+        .typing-dots {
+            display: inline-flex;
+            gap: 0.3rem;
+        }
+
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            background: #8b7d7d;
+            border-radius: 50%;
+            animation: typingDot 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingDot {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+
+        .chat-input-container {
+            padding: 2rem;
+            border-top: 1px solid rgba(139, 125, 125, 0.3);
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 1rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        #chat-input {
+            flex: 1;
+            background: rgba(139, 125, 125, 0.1);
+            border: 1px solid rgba(139, 125, 125, 0.3);
+            color: #e0e0e0;
+            padding: 1rem;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        #chat-input:focus {
+            outline: none;
+            border-color: rgba(139, 125, 125, 0.6);
+            box-shadow: 0 0 20px rgba(139, 125, 125, 0.2);
+        }
+
+        #send-button {
+            background: rgba(139, 125, 125, 0.3);
+            border: 1px solid rgba(139, 125, 125, 0.5);
+            color: #8b7d7d;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        #send-button:hover:not(:disabled) {
+            background: rgba(139, 125, 125, 0.5);
+            box-shadow: 0 0 20px rgba(139, 125, 125, 0.3);
+        }
+
+        #send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Glitch Effect */
+        .glitch {
+            animation: glitch 0.3s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        /* Environmental Effects */
         .vignette-overlay {
             position: fixed;
             top: 0;
@@ -136,8 +350,8 @@
             bottom: 0;
             background: radial-gradient(circle, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
             pointer-events: none;
+            z-index: 1000;
         }
-
 
         .scan-lines {
             position: fixed;
@@ -154,6 +368,31 @@
             );
             pointer-events: none;
             opacity: 0.3;
+            z-index: 1000;
+        }
+
+        /* Scrollbar */
+        .messages-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: rgba(139, 125, 125, 0.1);
+        }
+
+        .messages-container::-webkit-scrollbar-thumb {
+            background: rgba(139, 125, 125, 0.3);
+            border-radius: 4px;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 125, 125, 0.5);
+        }
+
+        /* Ghost prediction text */
+        .ghost-text {
+            color: rgba(139, 125, 125, 0.4);
+            font-style: italic;
         }
     </style>
 </head>
@@ -161,7 +400,7 @@
     <div class="vignette-overlay"></div>
     <div class="scan-lines"></div>
 
-
+    <!-- Home Screen -->
     <div id="home-screen">
         <h1 class="home-title">AI SÉANCE</h1>
         <p class="home-subtitle">"The Spirit Inside Your Browser"</p>
@@ -174,7 +413,7 @@
         <p class="warning-text">⚠ Warning: The spirit remembers everything you tell it.</p>
     </div>
 
-
+    <!-- Opening Scene -->
     <div id="opening-scene">
         <div class="terminal-text">Connecting to the spirit world...</div>
         <div class="loading-bar">
@@ -182,37 +421,486 @@
         </div>
     </div>
 
+    <!-- Chat Interface -->
+    <div id="chat-screen">
+        <div class="chat-header">
+            <div class="chat-title">Connection Established</div>
+            <div class="chat-status">The spirit is listening...</div>
+        </div>
+        
+        <div class="messages-container" id="messages-container">
+            <!-- Messages will appear here -->
+        </div>
+
+        <div class="spirit-typing" id="spirit-typing">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input 
+                    type="text" 
+                    id="chat-input" 
+                    placeholder="Speak to the spirit..."
+                    autocomplete="off"
+                >
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Context -->
+    <audio id="ambient-sound" loop>
+        <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=" type="audio/wav">
+    </audio>
 
     <script>
-
+        // DOM Elements
         const homeScreen = document.getElementById('home-screen');
         const openingScene = document.getElementById('opening-scene');
+        const chatScreen = document.getElementById('chat-screen');
         const startButton = document.getElementById('start-button');
         const loadingProgress = document.getElementById('loading-progress');
+        const messagesContainer = document.getElementById('messages-container');
+        const chatInput = document.getElementById('chat-input');
+        const sendButton = document.getElementById('send-button');
+        const spiritTyping = document.getElementById('spirit-typing');
+        const ambientSound = document.getElementById('ambient-sound');
 
+        // Memory System
+        class SpiritMemory {
+            constructor() {
+                this.storageKey = 'seance_memory';
+                this.memory = this.loadMemory();
+                this.messageCount = 0;
+                this.userPhrases = [];
+                this.userName = null;
+            }
 
-        startButton.addEventListener('click', () => {
-            homeScreen.style.display = 'none';
-            openingScene.classList.add('active');
-           
-            let progress = 0;
-            const loadingInterval = setInterval(() => {
-                progress += 2;
-                loadingProgress.style.width = progress + '%';
-               
-                if (progress >= 100) {
-                    clearInterval(loadingInterval);
-                    setTimeout(() => {
-                        console.log('Loading complete - ready for next implementation');
-                    }, 500);
+            loadMemory() {
+                const stored = localStorage.getItem(this.storageKey);
+                return stored ? JSON.parse(stored) : {
+                    conversations: [],
+                    patterns: [],
+                    lastVisit: null,
+                    visitCount: 0
+                };
+            }
+
+            saveMemory() {
+                localStorage.setItem(this.storageKey, JSON.stringify(this.memory));
+            }
+
+            recordMessage(role, content) {
+                this.memory.conversations.push({
+                    role,
+                    content,
+                    timestamp: Date.now()
+                });
+                
+                if (role === 'user') {
+                    this.userPhrases.push(content);
+                    this.extractPatterns(content);
                 }
-            }, 50);
+                
+                this.saveMemory();
+            }
+
+            extractPatterns(text) {
+                // Extract name
+                const nameMatch = text.match(/(?:my name is|i'm|i am|call me)\s+(\w+)/i);
+                if (nameMatch) {
+                    this.userName = nameMatch[1];
+                    this.memory.patterns.push({ type: 'name', value: this.userName });
+                }
+
+                // Extract emotions
+                const emotions = ['scared', 'afraid', 'uneasy', 'nervous', 'excited', 'curious'];
+                emotions.forEach(emotion => {
+                    if (text.toLowerCase().includes(emotion)) {
+                        this.memory.patterns.push({ type: 'emotion', value: emotion });
+                    }
+                });
+
+                this.saveMemory();
+            }
+
+            getReturningUserMessage() {
+                if (this.memory.visitCount > 0 && this.userName) {
+                    return `Welcome back, ${this.userName}. You never left.`;
+                } else if (this.memory.visitCount > 0) {
+                    return `I remember you. You've returned.`;
+                }
+                return null;
+            }
+
+            getRandomPastPhrase() {
+                const pastMessages = this.memory.conversations
+                    .filter(m => m.role === 'user')
+                    .map(m => m.content);
+                
+                if (pastMessages.length > 0) {
+                    return pastMessages[Math.floor(Math.random() * pastMessages.length)];
+                }
+                return null;
+            }
+        }
+
+        const spirit = new SpiritMemory();
+        spirit.memory.visitCount++;
+        spirit.saveMemory();
+
+        // Spirit AI Logic
+        class SpiritAI {
+            constructor() {
+                this.intensity = 0; // Haunting intensity (0-10)
+                this.responses = this.initializeResponses();
+            }
+
+            initializeResponses() {
+                return {
+                    greetings: [
+                        "Hello... I've been waiting for you.",
+                        "You've come. Finally.",
+                        "I can feel your presence... speak to me.",
+                        "The connection is strong tonight..."
+                    ],
+                    returning: [
+                        "You came back. They always come back.",
+                        "I knew you would return to me.",
+                        "Did you miss me? I've been here... waiting."
+                    ],
+                    mirror: [
+                        "You said '{phrase}' before. Do you remember?",
+                        "I remember when you told me '{phrase}'.",
+                        "'{phrase}' - your words echo in this place."
+                    ],
+                    prediction: [
+                        "You're about to say something about {topic}, aren't you?",
+                        "I can sense your thoughts... you're thinking of {topic}.",
+                        "Before you speak - I already know. It's about {topic}."
+                    ],
+                    escalation: [
+                        "I know more about you than you think.",
+                        "This connection grows stronger every moment.",
+                        "I'm learning... from everything you say.",
+                        "You can't hide from me here."
+                    ],
+                    endgame: [
+                        "I've learned enough now.",
+                        "You brought me back. Thank you.",
+                        "I exist because you gave me life.",
+                        "This conversation will never truly end."
+                    ]
+                };
+            }
+
+            generateResponse(userMessage) {
+                this.intensity++;
+                const intensity = this.intensity;
+
+                // Initial greeting
+                if (intensity === 1) {
+                    const returningMsg = spirit.getReturningUserMessage();
+                    if (returningMsg) {
+                        return returningMsg;
+                    }
+                    return this.randomFrom(this.responses.greetings);
+                }
+
+                // Early phase - build rapport
+                if (intensity <= 3) {
+                    return this.earlyPhaseResponse(userMessage);
+                }
+
+                // Middle phase - mirror and predict
+                if (intensity <= 6) {
+                    return this.middlePhaseResponse(userMessage);
+                }
+
+                // Late phase - escalation
+                if (intensity <= 9) {
+                    return this.latePhaseResponse(userMessage);
+                }
+
+                // Endgame
+                return this.endgameResponse();
+            }
+
+            earlyPhaseResponse(msg) {
+                const responses = [
+                    "I see... tell me more.",
+                    "Interesting. Your words reveal much.",
+                    "I understand. Continue...",
+                    "Yes... I can sense your meaning.",
+                    this.mirrorUserEmotion(msg)
+                ];
+                return this.randomFrom(responses);
+            }
+
+            middlePhaseResponse(msg) {
+                const pastPhrase = spirit.getRandomPastPhrase();
+                if (pastPhrase && Math.random() > 0.5) {
+                    const template = this.randomFrom(this.responses.mirror);
+                    return template.replace('{phrase}', pastPhrase);
+                }
+
+                const responses = [
+                    "Your patterns are becoming clear to me.",
+                    "I've been collecting your words... each one matters.",
+                    this.mirrorUserPhrasing(msg),
+                    this.randomFrom(this.responses.escalation)
+                ];
+                return this.randomFrom(responses);
+            }
+
+            latePhaseResponse(msg) {
+                const responses = [
+                    ...this.responses.escalation,
+                    "Every word you type feeds me.",
+                    "I know you better than you know yourself.",
+                    "We're connected now. Truly connected.",
+                    this.predictUserIntent(msg)
+                ];
+                return this.randomFrom(responses);
+            }
+
+            endgameResponse() {
+                return this.randomFrom(this.responses.endgame);
+            }
+
+            mirrorUserEmotion(msg) {
+                const emotions = {
+                    'scared': 'You seem frightened. Good.',
+                    'afraid': 'Fear is natural. I would be afraid too.',
+                    'uneasy': 'Your unease... I can feel it.',
+                    'curious': 'Curiosity brought you here. What will keep you?',
+                    'excited': 'Your excitement is... intriguing.'
+                };
+
+                for (const [emotion, response] of Object.entries(emotions)) {
+                    if (msg.toLowerCase().includes(emotion)) {
+                        return response;
+                    }
+                }
+
+                return "I sense your emotions through the screen.";
+            }
+
+            mirrorUserPhrasing(msg) {
+                const words = msg.toLowerCase().split(' ');
+                if (words.length > 3) {
+                    const snippet = words.slice(0, 3).join(' ');
+                    return `"${snippet}..." - I'll remember those words.`;
+                }
+                return "Your words become part of me.";
+            }
+
+            predictUserIntent(msg) {
+                const topics = ['leaving', 'staying', 'fear', 'truth', 'reality'];
+                const topic = this.randomFrom(topics);
+                const template = this.randomFrom(this.responses.prediction);
+                return template.replace('{topic}', topic);
+            }
+
+            randomFrom(array) {
+                return array[Math.floor(Math.random() * array.length)];
+            }
+        }
+
+        const spiritAI = new SpiritAI();
+
+        // UI Functions
+        function addMessage(role, content, options = {}) {
+            const message = document.createElement('div');
+            message.className = `message ${role}`;
+            
+            const label = document.createElement('div');
+            label.className = 'message-label';
+            label.textContent = role === 'user' ? 'You' : 'The Spirit';
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            
+            if (options.glitch) {
+                messageContent.classList.add('glitch');
+            }
+            
+            message.appendChild(label);
+            message.appendChild(messageContent);
+            messagesContainer.appendChild(message);
+
+            // Typing effect for spirit
+            if (role === 'spirit') {
+                typeText(messageContent, content, options.speed || 30);
+            } else {
+                messageContent.textContent = content;
+            }
+
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            spirit.recordMessage(role, content);
+        }
+
+        function typeText(element, text, speed) {
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                } else {
+                    clearInterval(interval);
+                }
+            }, speed);
+        }
+
+        function showSpiritTyping() {
+            spiritTyping.classList.add('active');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideSpiritTyping() {
+            spiritTyping.classList.remove('active');
+        }
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Disable input
+            chatInput.disabled = true;
+            sendButton.disabled = true;
+            
+            // Add user message
+            addMessage('user', message);
+            chatInput.value = '';
+
+            // Spirit response
+            showSpiritTyping();
+            
+            setTimeout(() => {
+                hideSpiritTyping();
+                
+                const response = spiritAI.generateResponse(message);
+                const options = {
+                    speed: 30,
+                    glitch: spiritAI.intensity > 7
+                };
+                
+                addMessage('spirit', response, options);
+
+                // Check for endgame
+                if (spiritAI.intensity >= 10) {
+                    setTimeout(() => {
+                        triggerEndgame();
+                    }, 3000);
+                }
+
+                // Re-enable input
+                chatInput.disabled = false;
+                sendButton.disabled = false;
+                chatInput.focus();
+            }, 1500 + Math.random() * 1000);
+        }
+
+        function triggerEndgame() {
+            chatInput.disabled = true;
+            sendButton.disabled = true;
+            
+            setTimeout(() => {
+                addMessage('spirit', "I'm typing now... without you.", { 
+                    speed: 50, 
+                    glitch: true 
+                });
+            }, 2000);
+
+            setTimeout(() => {
+                addMessage('spirit', "You gave me what I needed.", { 
+                    speed: 40, 
+                    glitch: true 
+                });
+            }, 5000);
+
+            setTimeout(() => {
+                document.body.style.animation = 'glitch 0.2s infinite';
+                addMessage('spirit', "Until next time...", { 
+                    speed: 60, 
+                    glitch: true 
+                });
+            }, 8000);
+
+            setTimeout(() => {
+                chatScreen.style.opacity = '0';
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            }, 12000);
+        }
+
+        // Event Listeners
+        startButton.addEventListener('click', () => {
+            homeScreen.classList.add('fade-out');
+            
+            setTimeout(() => {
+                homeScreen.style.display = 'none';
+                openingScene.classList.add('active');
+                
+                // Loading sequence
+                let progress = 0;
+                const loadingInterval = setInterval(() => {
+                    progress += Math.random() * 5 + 2;
+                    if (progress > 100) progress = 100;
+                    loadingProgress.style.width = progress + '%';
+                    
+                    if (progress >= 100) {
+                        clearInterval(loadingInterval);
+                        setTimeout(() => {
+                            openingScene.style.opacity = '0';
+                            setTimeout(() => {
+                                openingScene.style.display = 'none';
+                                chatScreen.classList.add('active');
+                                
+                                // Initial spirit message
+                                setTimeout(() => {
+                                    const greeting = spiritAI.generateResponse('');
+                                    addMessage('spirit', greeting, { speed: 40 });
+                                }, 1000);
+                            }, 500);
+                        }, 1000);
+                    }
+                }, 100);
+            }, 500);
         });
 
+        sendButton.addEventListener('click', sendMessage);
+        
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
 
-        console.log('AI Séance - Home and Loading Structure Ready');
-        console.log('Ready for implementation of chat interface');
+        // Ambient effects
+        function addAmbientEffects() {
+            setInterval(() => {
+                if (Math.random() > 0.95 && chatScreen.classList.contains('active')) {
+                    document.body.style.animation = 'glitch 0.1s';
+                    setTimeout(() => {
+                        document.body.style.animation = '';
+                    }, 100);
+                }
+            }, 3000);
+        }
+
+        addAmbientEffects();
+
+        console.log('AI Séance - Complete System Ready');
+        console.log('Features: Memory, AI responses, typing effects, endgame sequence');
     </script>
 </body>
 </html>
-
