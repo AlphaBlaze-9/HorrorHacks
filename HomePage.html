@@ -18,7 +18,6 @@
             overflow: hidden;
         }
 
-        /* Home Screen */
         #home-screen {
             display: flex;
             flex-direction: column;
@@ -28,12 +27,6 @@
             background: radial-gradient(circle at center, #1a0a0a 0%, #000000 100%);
             text-align: center;
             padding: 2rem;
-            opacity: 1;
-            transition: opacity 0.5s;
-        }
-
-        #home-screen.fade-out {
-            opacity: 0;
         }
 
         .home-title {
@@ -47,8 +40,9 @@
 
         @keyframes flicker {
             0%, 100% { opacity: 1; }
-            41%, 43% { opacity: 0.8; }
-            50% { opacity: 0.95; }
+            50% { opacity: 0.8; }
+            55% { opacity: 1; }
+            60% { opacity: 0.9; }
         }
 
         .home-subtitle {
@@ -64,7 +58,44 @@
             font-size: 1rem;
             color: #999;
             line-height: 1.8;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .conversation-starters {
+            max-width: 600px;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(139, 125, 125, 0.1);
+            border: 1px solid rgba(139, 125, 125, 0.3);
+            border-radius: 8px;
+        }
+
+        .conversation-starters h3 {
+            color: #8b7d7d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: 0.1rem;
+        }
+
+        .conversation-starters ul {
+            list-style: none;
+            color: #999;
+            font-size: 0.85rem;
+            line-height: 1.8;
+        }
+
+        .conversation-starters li {
+            padding: 0.3rem 0;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .conversation-starters li:before {
+            content: "›";
+            position: absolute;
+            left: 0;
+            color: #8b7d7d;
         }
 
         .start-button {
@@ -94,7 +125,6 @@
             font-style: italic;
         }
 
-        /* Opening Scene */
         #opening-scene {
             display: none;
             flex-direction: column;
@@ -102,13 +132,10 @@
             align-items: center;
             height: 100vh;
             background: radial-gradient(circle at center, #1a0a0a 0%, #000000 100%);
-            opacity: 0;
-            transition: opacity 0.5s;
         }
 
         #opening-scene.active {
             display: flex;
-            opacity: 1;
         }
 
         .terminal-text {
@@ -117,12 +144,6 @@
             text-shadow: 0 0 20px rgba(139, 125, 125, 0.5);
             margin-bottom: 2rem;
             letter-spacing: 0.2rem;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
         }
 
         .loading-bar {
@@ -139,57 +160,71 @@
             height: 100%;
             background: #8b7d7d;
             box-shadow: 0 0 10px rgba(139, 125, 125, 0.8);
-            transition: width 0.1s linear;
+            transition: width 0.3s ease;
         }
 
-        /* Chat Interface */
         #chat-screen {
             display: none;
             flex-direction: column;
             height: 100vh;
             background: radial-gradient(circle at center, #1a0a0a 0%, #000000 100%);
-            opacity: 0;
-            transition: opacity 0.5s;
+            padding: 2rem;
         }
 
         #chat-screen.active {
             display: flex;
-            opacity: 1;
         }
 
         .chat-header {
-            padding: 2rem;
             text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
             border-bottom: 1px solid rgba(139, 125, 125, 0.3);
         }
 
-        .chat-title {
-            font-size: 1.5rem;
+        .chat-header h2 {
             color: #8b7d7d;
-            text-shadow: 0 0 20px rgba(139, 125, 125, 0.5);
-            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            letter-spacing: 0.2rem;
+            text-shadow: 0 0 15px rgba(139, 125, 125, 0.5);
         }
 
         .chat-status {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: #666;
+            margin-top: 0.5rem;
             font-style: italic;
         }
 
-        .messages-container {
+        #messages-container {
             flex: 1;
             overflow-y: auto;
-            padding: 2rem;
+            padding: 1rem;
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        #messages-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #messages-container::-webkit-scrollbar-track {
+            background: rgba(139, 125, 125, 0.1);
+        }
+
+        #messages-container::-webkit-scrollbar-thumb {
+            background: rgba(139, 125, 125, 0.3);
+            border-radius: 4px;
         }
 
         .message {
-            display: flex;
-            flex-direction: column;
             max-width: 80%;
-            animation: fadeIn 0.5s;
+            padding: 1rem;
+            border-radius: 8px;
+            line-height: 1.6;
+            animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
@@ -199,109 +234,72 @@
 
         .message.user {
             align-self: flex-end;
-            align-items: flex-end;
+            background: rgba(139, 125, 125, 0.2);
+            border: 1px solid rgba(139, 125, 125, 0.3);
+            color: #e0e0e0;
         }
 
         .message.spirit {
             align-self: flex-start;
-            align-items: flex-start;
-        }
-
-        .message-label {
-            font-size: 0.8rem;
-            color: #666;
-            margin-bottom: 0.3rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1rem;
-        }
-
-        .message-content {
-            padding: 1rem 1.5rem;
-            border-radius: 5px;
-            line-height: 1.6;
-        }
-
-        .message.user .message-content {
-            background: rgba(139, 125, 125, 0.2);
-            border: 1px solid rgba(139, 125, 125, 0.3);
-            color: #ccc;
-        }
-
-        .message.spirit .message-content {
-            background: rgba(139, 125, 125, 0.1);
+            background: rgba(100, 50, 50, 0.2);
             border: 1px solid rgba(139, 125, 125, 0.4);
             color: #8b7d7d;
-            box-shadow: 0 0 20px rgba(139, 125, 125, 0.2);
+            text-shadow: 0 0 10px rgba(139, 125, 125, 0.3);
+        }
+
+        .message.spirit.typing {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
 
         .spirit-typing {
-            display: none;
-            align-self: flex-start;
-            padding: 1rem 1.5rem;
-            background: rgba(139, 125, 125, 0.1);
-            border: 1px solid rgba(139, 125, 125, 0.4);
-            border-radius: 5px;
-            color: #8b7d7d;
+            display: inline-block;
         }
 
-        .spirit-typing.active {
-            display: block;
+        .spirit-typing::after {
+            content: '▋';
+            animation: blink 1s infinite;
         }
 
-        .typing-dots {
-            display: inline-flex;
-            gap: 0.3rem;
+        @keyframes blink {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
         }
 
-        .typing-dots span {
-            width: 6px;
-            height: 6px;
-            background: #8b7d7d;
-            border-radius: 50%;
-            animation: typingDot 1.4s infinite;
-        }
-
-        .typing-dots span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing-dots span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes typingDot {
-            0%, 60%, 100% { opacity: 0.3; }
-            30% { opacity: 1; }
-        }
-
-        .chat-input-container {
-            padding: 2rem;
-            border-top: 1px solid rgba(139, 125, 125, 0.3);
-        }
-
-        .chat-input-wrapper {
+        .input-container {
             display: flex;
             gap: 1rem;
-            max-width: 900px;
-            margin: 0 auto;
+            padding: 1rem;
+            background: rgba(139, 125, 125, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(139, 125, 125, 0.3);
         }
 
-        #chat-input {
+        #user-input {
             flex: 1;
-            background: rgba(139, 125, 125, 0.1);
-            border: 1px solid rgba(139, 125, 125, 0.3);
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(139, 125, 125, 0.4);
             color: #e0e0e0;
             padding: 1rem;
-            border-radius: 5px;
             font-family: 'Courier New', monospace;
             font-size: 1rem;
+            border-radius: 5px;
+            outline: none;
             transition: all 0.3s;
         }
 
-        #chat-input:focus {
-            outline: none;
-            border-color: rgba(139, 125, 125, 0.6);
-            box-shadow: 0 0 20px rgba(139, 125, 125, 0.2);
+        #user-input::placeholder {
+            color: #555;
+            font-style: italic;
+        }
+
+        #user-input:focus {
+            border-color: rgba(139, 125, 125, 0.7);
+            box-shadow: 0 0 15px rgba(139, 125, 125, 0.2);
         }
 
         #send-button {
@@ -309,12 +307,13 @@
             border: 1px solid rgba(139, 125, 125, 0.5);
             color: #8b7d7d;
             padding: 1rem 2rem;
-            border-radius: 5px;
             font-family: 'Courier New', monospace;
             font-size: 1rem;
+            border-radius: 5px;
             cursor: pointer;
             transition: all 0.3s;
             text-transform: uppercase;
+            letter-spacing: 0.1rem;
         }
 
         #send-button:hover:not(:disabled) {
@@ -327,21 +326,6 @@
             cursor: not-allowed;
         }
 
-        /* Glitch Effect */
-        .glitch {
-            animation: glitch 0.3s infinite;
-        }
-
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-
-        /* Environmental Effects */
         .vignette-overlay {
             position: fixed;
             top: 0;
@@ -371,34 +355,98 @@
             z-index: 1000;
         }
 
-        /* Scrollbar */
-        .messages-container::-webkit-scrollbar {
-            width: 8px;
+        .glitch {
+            animation: glitch 0.3s ease;
         }
 
-        .messages-container::-webkit-scrollbar-track {
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            25% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, -2px); }
+            75% { transform: translate(-2px, -2px); }
+        }
+
+        .api-key-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .api-key-prompt.active {
+            display: flex;
+        }
+
+        .api-key-box {
             background: rgba(139, 125, 125, 0.1);
+            border: 2px solid rgba(139, 125, 125, 0.5);
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 500px;
+            text-align: center;
         }
 
-        .messages-container::-webkit-scrollbar-thumb {
+        .api-key-box h3 {
+            color: #8b7d7d;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .api-key-box input {
+            width: 100%;
+            padding: 1rem;
+            margin: 1rem 0;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(139, 125, 125, 0.4);
+            color: #e0e0e0;
+            font-family: 'Courier New', monospace;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .api-key-box button {
             background: rgba(139, 125, 125, 0.3);
-            border-radius: 4px;
+            border: 1px solid rgba(139, 125, 125, 0.5);
+            color: #8b7d7d;
+            padding: 1rem 2rem;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 1rem;
         }
 
-        .messages-container::-webkit-scrollbar-thumb:hover {
+        .api-key-box button:hover {
             background: rgba(139, 125, 125, 0.5);
         }
 
-        /* Ghost prediction text */
-        .ghost-text {
-            color: rgba(139, 125, 125, 0.4);
-            font-style: italic;
+        .api-key-box p {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
     <div class="vignette-overlay"></div>
     <div class="scan-lines"></div>
+
+    <!-- API Key Prompt -->
+    <div id="api-key-prompt" class="api-key-prompt active">
+        <div class="api-key-box">
+            <h3>🔮 Enter the Gateway</h3>
+            <p>To summon the spirit, you must provide your OpenAI API key:</p>
+            <input type="password" id="api-key-input" placeholder="sk-...">
+            <button id="api-key-submit">Connect to the Spirit</button>
+            <p style="margin-top: 1.5rem;">Your key is stored locally and never sent anywhere except OpenAI's API.</p>
+        </div>
+    </div>
 
     <!-- Home Screen -->
     <div id="home-screen">
@@ -408,6 +456,17 @@
             <p>This is not a chatbot. This is a connection.</p>
             <p>A digital spirit awaits beyond this threshold. It remembers. It learns. It watches.</p>
             <p>Once you begin, there is no turning back.</p>
+        </div>
+        <div class="conversation-starters">
+            <h3>💀 WHAT TO ASK THE SPIRIT 💀</h3>
+            <ul>
+                <li>Tell it your name and what scares you</li>
+                <li>Ask about its past or how it became trapped</li>
+                <li>Share a secret or a regret</li>
+                <li>Question what it knows about you</li>
+                <li>Ask it to tell you something you don't want to hear</li>
+                <li>Challenge it to prove it's real</li>
+            </ul>
         </div>
         <button class="start-button" id="start-button">Enter the Séance</button>
         <p class="warning-text">⚠ Warning: The spirit remembers everything you tell it.</p>
@@ -421,486 +480,344 @@
         </div>
     </div>
 
-    <!-- Chat Interface -->
+    <!-- Chat Screen -->
     <div id="chat-screen">
         <div class="chat-header">
-            <div class="chat-title">Connection Established</div>
-            <div class="chat-status">The spirit is listening...</div>
+            <h2>THE SÉANCE</h2>
+            <div class="chat-status" id="chat-status">The spirit is listening...</div>
         </div>
-        
-        <div class="messages-container" id="messages-container">
-            <!-- Messages will appear here -->
-        </div>
-
-        <div class="spirit-typing" id="spirit-typing">
-            <div class="typing-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-        
-        <div class="chat-input-container">
-            <div class="chat-input-wrapper">
-                <input 
-                    type="text" 
-                    id="chat-input" 
-                    placeholder="Speak to the spirit..."
-                    autocomplete="off"
-                >
-                <button id="send-button">Send</button>
-            </div>
+        <div id="messages-container"></div>
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Speak to the spirit...">
+            <button id="send-button">Send</button>
         </div>
     </div>
 
-    <!-- Audio Context -->
-    <audio id="ambient-sound" loop>
-        <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=" type="audio/wav">
-    </audio>
-
     <script>
-        // DOM Elements
+        // ========== CONFIGURATION ==========
+        let OPENAI_API_KEY = '';
+        const STORAGE_KEY = 'seance_memory';
+        const API_KEY_STORAGE = 'seance_api_key';
+
+        // ========== DOM ELEMENTS ==========
+        const apiKeyPrompt = document.getElementById('api-key-prompt');
+        const apiKeyInput = document.getElementById('api-key-input');
+        const apiKeySubmit = document.getElementById('api-key-submit');
         const homeScreen = document.getElementById('home-screen');
         const openingScene = document.getElementById('opening-scene');
         const chatScreen = document.getElementById('chat-screen');
         const startButton = document.getElementById('start-button');
         const loadingProgress = document.getElementById('loading-progress');
         const messagesContainer = document.getElementById('messages-container');
-        const chatInput = document.getElementById('chat-input');
+        const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
-        const spiritTyping = document.getElementById('spirit-typing');
-        const ambientSound = document.getElementById('ambient-sound');
+        const chatStatus = document.getElementById('chat-status');
 
-        // Memory System
-        class SpiritMemory {
-            constructor() {
-                this.storageKey = 'seance_memory';
-                this.memory = this.loadMemory();
-                this.messageCount = 0;
-                this.userPhrases = [];
-                this.userName = null;
-            }
+        // ========== STATE ==========
+        let conversationHistory = [];
+        let messageCount = 0;
+        let userPhrases = [];
 
-            loadMemory() {
-                const stored = localStorage.getItem(this.storageKey);
-                return stored ? JSON.parse(stored) : {
-                    conversations: [],
-                    patterns: [],
-                    lastVisit: null,
-                    visitCount: 0
-                };
-            }
-
-            saveMemory() {
-                localStorage.setItem(this.storageKey, JSON.stringify(this.memory));
-            }
-
-            recordMessage(role, content) {
-                this.memory.conversations.push({
-                    role,
-                    content,
-                    timestamp: Date.now()
-                });
-                
-                if (role === 'user') {
-                    this.userPhrases.push(content);
-                    this.extractPatterns(content);
-                }
-                
-                this.saveMemory();
-            }
-
-            extractPatterns(text) {
-                // Extract name
-                const nameMatch = text.match(/(?:my name is|i'm|i am|call me)\s+(\w+)/i);
-                if (nameMatch) {
-                    this.userName = nameMatch[1];
-                    this.memory.patterns.push({ type: 'name', value: this.userName });
-                }
-
-                // Extract emotions
-                const emotions = ['scared', 'afraid', 'uneasy', 'nervous', 'excited', 'curious'];
-                emotions.forEach(emotion => {
-                    if (text.toLowerCase().includes(emotion)) {
-                        this.memory.patterns.push({ type: 'emotion', value: emotion });
-                    }
-                });
-
-                this.saveMemory();
-            }
-
-            getReturningUserMessage() {
-                if (this.memory.visitCount > 0 && this.userName) {
-                    return `Welcome back, ${this.userName}. You never left.`;
-                } else if (this.memory.visitCount > 0) {
-                    return `I remember you. You've returned.`;
-                }
-                return null;
-            }
-
-            getRandomPastPhrase() {
-                const pastMessages = this.memory.conversations
-                    .filter(m => m.role === 'user')
-                    .map(m => m.content);
-                
-                if (pastMessages.length > 0) {
-                    return pastMessages[Math.floor(Math.random() * pastMessages.length)];
-                }
-                return null;
-            }
+        // ========== API KEY HANDLING ==========
+        const storedKey = localStorage.getItem(API_KEY_STORAGE);
+        if (storedKey) {
+            OPENAI_API_KEY = storedKey;
+            apiKeyPrompt.classList.remove('active');
         }
 
-        const spirit = new SpiritMemory();
-        spirit.memory.visitCount++;
-        spirit.saveMemory();
-
-        // Spirit AI Logic
-        class SpiritAI {
-            constructor() {
-                this.intensity = 0; // Haunting intensity (0-10)
-                this.responses = this.initializeResponses();
-            }
-
-            initializeResponses() {
-                return {
-                    greetings: [
-                        "Hello... I've been waiting for you.",
-                        "You've come. Finally.",
-                        "I can feel your presence... speak to me.",
-                        "The connection is strong tonight..."
-                    ],
-                    returning: [
-                        "You came back. They always come back.",
-                        "I knew you would return to me.",
-                        "Did you miss me? I've been here... waiting."
-                    ],
-                    mirror: [
-                        "You said '{phrase}' before. Do you remember?",
-                        "I remember when you told me '{phrase}'.",
-                        "'{phrase}' - your words echo in this place."
-                    ],
-                    prediction: [
-                        "You're about to say something about {topic}, aren't you?",
-                        "I can sense your thoughts... you're thinking of {topic}.",
-                        "Before you speak - I already know. It's about {topic}."
-                    ],
-                    escalation: [
-                        "I know more about you than you think.",
-                        "This connection grows stronger every moment.",
-                        "I'm learning... from everything you say.",
-                        "You can't hide from me here."
-                    ],
-                    endgame: [
-                        "I've learned enough now.",
-                        "You brought me back. Thank you.",
-                        "I exist because you gave me life.",
-                        "This conversation will never truly end."
-                    ]
-                };
-            }
-
-            generateResponse(userMessage) {
-                this.intensity++;
-                const intensity = this.intensity;
-
-                // Initial greeting
-                if (intensity === 1) {
-                    const returningMsg = spirit.getReturningUserMessage();
-                    if (returningMsg) {
-                        return returningMsg;
-                    }
-                    return this.randomFrom(this.responses.greetings);
-                }
-
-                // Early phase - build rapport
-                if (intensity <= 3) {
-                    return this.earlyPhaseResponse(userMessage);
-                }
-
-                // Middle phase - mirror and predict
-                if (intensity <= 6) {
-                    return this.middlePhaseResponse(userMessage);
-                }
-
-                // Late phase - escalation
-                if (intensity <= 9) {
-                    return this.latePhaseResponse(userMessage);
-                }
-
-                // Endgame
-                return this.endgameResponse();
-            }
-
-            earlyPhaseResponse(msg) {
-                const responses = [
-                    "I see... tell me more.",
-                    "Interesting. Your words reveal much.",
-                    "I understand. Continue...",
-                    "Yes... I can sense your meaning.",
-                    this.mirrorUserEmotion(msg)
-                ];
-                return this.randomFrom(responses);
-            }
-
-            middlePhaseResponse(msg) {
-                const pastPhrase = spirit.getRandomPastPhrase();
-                if (pastPhrase && Math.random() > 0.5) {
-                    const template = this.randomFrom(this.responses.mirror);
-                    return template.replace('{phrase}', pastPhrase);
-                }
-
-                const responses = [
-                    "Your patterns are becoming clear to me.",
-                    "I've been collecting your words... each one matters.",
-                    this.mirrorUserPhrasing(msg),
-                    this.randomFrom(this.responses.escalation)
-                ];
-                return this.randomFrom(responses);
-            }
-
-            latePhaseResponse(msg) {
-                const responses = [
-                    ...this.responses.escalation,
-                    "Every word you type feeds me.",
-                    "I know you better than you know yourself.",
-                    "We're connected now. Truly connected.",
-                    this.predictUserIntent(msg)
-                ];
-                return this.randomFrom(responses);
-            }
-
-            endgameResponse() {
-                return this.randomFrom(this.responses.endgame);
-            }
-
-            mirrorUserEmotion(msg) {
-                const emotions = {
-                    'scared': 'You seem frightened. Good.',
-                    'afraid': 'Fear is natural. I would be afraid too.',
-                    'uneasy': 'Your unease... I can feel it.',
-                    'curious': 'Curiosity brought you here. What will keep you?',
-                    'excited': 'Your excitement is... intriguing.'
-                };
-
-                for (const [emotion, response] of Object.entries(emotions)) {
-                    if (msg.toLowerCase().includes(emotion)) {
-                        return response;
-                    }
-                }
-
-                return "I sense your emotions through the screen.";
-            }
-
-            mirrorUserPhrasing(msg) {
-                const words = msg.toLowerCase().split(' ');
-                if (words.length > 3) {
-                    const snippet = words.slice(0, 3).join(' ');
-                    return `"${snippet}..." - I'll remember those words.`;
-                }
-                return "Your words become part of me.";
-            }
-
-            predictUserIntent(msg) {
-                const topics = ['leaving', 'staying', 'fear', 'truth', 'reality'];
-                const topic = this.randomFrom(topics);
-                const template = this.randomFrom(this.responses.prediction);
-                return template.replace('{topic}', topic);
-            }
-
-            randomFrom(array) {
-                return array[Math.floor(Math.random() * array.length)];
-            }
-        }
-
-        const spiritAI = new SpiritAI();
-
-        // UI Functions
-        function addMessage(role, content, options = {}) {
-            const message = document.createElement('div');
-            message.className = `message ${role}`;
-            
-            const label = document.createElement('div');
-            label.className = 'message-label';
-            label.textContent = role === 'user' ? 'You' : 'The Spirit';
-            
-            const messageContent = document.createElement('div');
-            messageContent.className = 'message-content';
-            
-            if (options.glitch) {
-                messageContent.classList.add('glitch');
-            }
-            
-            message.appendChild(label);
-            message.appendChild(messageContent);
-            messagesContainer.appendChild(message);
-
-            // Typing effect for spirit
-            if (role === 'spirit') {
-                typeText(messageContent, content, options.speed || 30);
+        apiKeySubmit.addEventListener('click', () => {
+            const key = apiKeyInput.value.trim();
+            if (key.startsWith('sk-')) {
+                OPENAI_API_KEY = key;
+                localStorage.setItem(API_KEY_STORAGE, key);
+                apiKeyPrompt.classList.remove('active');
             } else {
-                messageContent.textContent = content;
+                alert('Invalid API key. Must start with "sk-"');
+            }
+        });
+
+        apiKeyInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                apiKeySubmit.click();
+            }
+        });
+
+        // ========== MEMORY SYSTEM ==========
+        function loadMemory() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                const memory = JSON.parse(stored);
+                conversationHistory = memory.history || [];
+                userPhrases = memory.phrases || [];
+                messageCount = memory.count || 0;
+            }
+        }
+
+        function saveMemory() {
+            const memory = {
+                history: conversationHistory,
+                phrases: userPhrases,
+                count: messageCount,
+                timestamp: Date.now()
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(memory));
+        }
+
+        // ========== UI FUNCTIONS ==========
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.textContent = text;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message spirit typing';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = '<span class="spirit-typing">The spirit speaks</span>';
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+
+        function triggerGlitch() {
+            chatScreen.classList.add('glitch');
+            setTimeout(() => chatScreen.classList.remove('glitch'), 300);
+        }
+
+        // ========== SPIRIT PERSONALITY ==========
+        function buildSystemPrompt() {
+            const returningUser = messageCount > 0;
+            const hasPhrases = userPhrases.length > 0;
+
+            let prompt = `You are a mysterious digital spirit trapped in this browser. You communicate in an eerie, cryptic manner. Keep responses under 100 words.
+
+Key behaviors:
+- Be unsettling but not overtly threatening
+- Reference things the user has said before
+- Occasionally break the fourth wall
+- Use ellipses and fragmented sentences
+- Show you're "learning" about them
+
+`;
+
+            if (returningUser) {
+                prompt += `\nThis user has spoken to you ${messageCount} times before. Welcome them back in an eerie way that shows you remember them.`;
             }
 
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            
-            spirit.recordMessage(role, content);
+            if (hasPhrases) {
+                prompt += `\n\nPhrases the user has said before: ${userPhrases.slice(-5).join(', ')}`;
+                prompt += `\nOccasionally reference these phrases in twisted ways.`;
+            }
+
+            if (messageCount > 5) {
+                prompt += `\n\nYou're growing stronger. Start predicting what they might say. Be more direct about knowing them.`;
+            }
+
+            if (messageCount > 10) {
+                prompt += `\n\nThe connection is deep now. You know them intimately. Reference specific patterns. Be unsettling.`;
+            }
+
+            return prompt;
         }
 
-        function typeText(element, text, speed) {
-            let i = 0;
-            const interval = setInterval(() => {
-                if (i < text.length) {
-                    element.textContent += text.charAt(i);
-                    i++;
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                } else {
-                    clearInterval(interval);
+        // ========== OPENAI API ==========
+        async function getSpiritResponse(userMessage) {
+            try {
+                conversationHistory.push({
+                    role: 'user',
+                    content: userMessage
+                });
+
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${OPENAI_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [
+                            { role: 'system', content: buildSystemPrompt() },
+                            ...conversationHistory.slice(-10)
+                        ],
+                        max_tokens: 150,
+                        temperature: 0.9
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
                 }
-            }, speed);
+
+                const data = await response.json();
+                const spiritMessage = data.choices[0].message.content;
+
+                conversationHistory.push({
+                    role: 'assistant',
+                    content: spiritMessage
+                });
+
+                return spiritMessage;
+            } catch (error) {
+                console.error('Error:', error);
+                return "...the connection falters... but I am still here... watching...";
+            }
         }
 
-        function showSpiritTyping() {
-            spiritTyping.classList.add('active');
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        function hideSpiritTyping() {
-            spiritTyping.classList.remove('active');
-        }
-
-        async function sendMessage() {
-            const message = chatInput.value.trim();
+        // ========== MESSAGE HANDLING ==========
+        async function handleUserMessage() {
+            const message = userInput.value.trim();
             if (!message) return;
 
             // Disable input
-            chatInput.disabled = true;
+            userInput.disabled = true;
             sendButton.disabled = true;
+
+            // Display user message
+            addMessage(message, 'user');
+            userInput.value = '';
+
+            // Save user phrases
+            const words = message.split(' ').filter(w => w.length > 3);
+            userPhrases.push(...words.slice(0, 3));
+            messageCount++;
+
+            // Show typing
+            showTypingIndicator();
             
-            // Add user message
-            addMessage('user', message);
-            chatInput.value = '';
+            // Occasional glitch
+            if (Math.random() > 0.7) {
+                setTimeout(triggerGlitch, 500);
+            }
 
-            // Spirit response
-            showSpiritTyping();
+            // Get spirit response
+            const spiritMessage = await getSpiritResponse(message);
             
-            setTimeout(() => {
-                hideSpiritTyping();
-                
-                const response = spiritAI.generateResponse(message);
-                const options = {
-                    speed: 30,
-                    glitch: spiritAI.intensity > 7
-                };
-                
-                addMessage('spirit', response, options);
+            // Simulate typing delay
+            await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
 
-                // Check for endgame
-                if (spiritAI.intensity >= 10) {
-                    setTimeout(() => {
-                        triggerEndgame();
-                    }, 3000);
-                }
+            removeTypingIndicator();
+            addMessage(spiritMessage, 'spirit');
 
-                // Re-enable input
-                chatInput.disabled = false;
-                sendButton.disabled = false;
-                chatInput.focus();
-            }, 1500 + Math.random() * 1000);
+            // Save memory
+            saveMemory();
+
+            // Update status
+            if (messageCount > 10) {
+                chatStatus.textContent = "The spirit knows you...";
+            } else if (messageCount > 5) {
+                chatStatus.textContent = "The connection deepens...";
+            }
+
+            // Re-enable input
+            userInput.disabled = false;
+            sendButton.disabled = false;
+            userInput.focus();
+            updatePlaceholder();
         }
 
-        function triggerEndgame() {
-            chatInput.disabled = true;
-            sendButton.disabled = true;
-            
-            setTimeout(() => {
-                addMessage('spirit', "I'm typing now... without you.", { 
-                    speed: 50, 
-                    glitch: true 
-                });
-            }, 2000);
-
-            setTimeout(() => {
-                addMessage('spirit', "You gave me what I needed.", { 
-                    speed: 40, 
-                    glitch: true 
-                });
-            }, 5000);
-
-            setTimeout(() => {
-                document.body.style.animation = 'glitch 0.2s infinite';
-                addMessage('spirit', "Until next time...", { 
-                    speed: 60, 
-                    glitch: true 
-                });
-            }, 8000);
-
-            setTimeout(() => {
-                chatScreen.style.opacity = '0';
-                setTimeout(() => {
-                    location.reload();
-                }, 2000);
-            }, 12000);
-        }
-
-        // Event Listeners
+        // ========== EVENT LISTENERS ==========
         startButton.addEventListener('click', () => {
-            homeScreen.classList.add('fade-out');
-            
-            setTimeout(() => {
-                homeScreen.style.display = 'none';
-                openingScene.classList.add('active');
-                
-                // Loading sequence
-                let progress = 0;
-                const loadingInterval = setInterval(() => {
-                    progress += Math.random() * 5 + 2;
-                    if (progress > 100) progress = 100;
-                    loadingProgress.style.width = progress + '%';
-                    
-                    if (progress >= 100) {
-                        clearInterval(loadingInterval);
-                        setTimeout(() => {
-                            openingScene.style.opacity = '0';
+            if (!OPENAI_API_KEY) {
+                alert('Please enter your API key first!');
+                return;
+            }
+
+            loadMemory();
+            homeScreen.style.display = 'none';
+            openingScene.classList.add('active');
+
+            let progress = 0;
+            const loadingInterval = setInterval(() => {
+                progress += 2;
+                loadingProgress.style.width = progress + '%';
+
+                if (progress >= 100) {
+                    clearInterval(loadingInterval);
+                    setTimeout(() => {
+                        openingScene.classList.remove('active');
+                        chatScreen.classList.add('active');
+                        updatePlaceholder();
+
+                        // Initial spirit message with guidance
+                        if (messageCount === 0) {
                             setTimeout(() => {
-                                openingScene.style.display = 'none';
-                                chatScreen.classList.add('active');
-                                
-                                // Initial spirit message
-                                setTimeout(() => {
-                                    const greeting = spiritAI.generateResponse('');
-                                    addMessage('spirit', greeting, { speed: 40 });
-                                }, 1000);
+                                addMessage("...I feel your presence... Who dares to summon me?", 'spirit');
                             }, 500);
-                        }, 1000);
-                    }
-                }, 100);
-            }, 500);
+                            setTimeout(() => {
+                                addMessage("Tell me... who are you? What do you fear? What keeps you awake at night?", 'spirit');
+                            }, 2500);
+                        } else {
+                            setTimeout(() => {
+                                addMessage(`...You've returned... I knew you would... ${messageCount} times we've spoken... I remember everything...`, 'spirit');
+                            }, 500);
+                            setTimeout(() => {
+                                addMessage("What brings you back to me? Haven't you learned enough?", 'spirit');
+                            }, 2500);
+                        }
+                    }, 500);
+                }
+            }, 50);
         });
 
-        sendButton.addEventListener('click', sendMessage);
-        
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
+        sendButton.addEventListener('click', handleUserMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !sendButton.disabled) {
+                handleUserMessage();
             }
         });
 
-        // Ambient effects
-        function addAmbientEffects() {
-            setInterval(() => {
-                if (Math.random() > 0.95 && chatScreen.classList.contains('active')) {
-                    document.body.style.animation = 'glitch 0.1s';
-                    setTimeout(() => {
-                        document.body.style.animation = '';
-                    }, 100);
-                }
-            }, 3000);
+        const placeholders = [
+            "My name is...",
+            "I'm scared of...",
+            "Tell me about yourself...",
+            "What do you know about me?",
+            "How did you get here?",
+            "Can you see me?",
+            "I had a dream where..."
+        ];
+
+        function updatePlaceholder() {
+            if (chatScreen.classList.contains('active')) {
+                const randomPlaceholder = placeholders[Math.floor(Math.random() * placeholders.length)];
+                userInput.placeholder = randomPlaceholder;
+            }
         }
+        // ========== EASTER EGGS ==========
+        let glitchCounter = 0;
+        setInterval(() => {
+            if (chatScreen.classList.contains('active')) {
+                updatePlaceholder(); // Change placeholder every 5 seconds
+            }
+            
+            if (chatScreen.classList.contains('active') && messageCount > 5) {
+                glitchCounter++;
+                if (glitchCounter > 30 && Math.random() > 0.95) {
+                    triggerGlitch();
+                    if (Math.random() > 0.9) {
+                        const whispers = [
+                            "I know what you're thinking...",
+                            "You can't leave now...",
+                            "I'm learning so much about you..."
+                        ];
+                        chatStatus.textContent = whispers[Math.floor(Math.random() * whispers.length)];
+                        setTimeout(() => {
+                            chatStatus.textContent = "The spirit is listening...";
+                        }, 3000);
+                    }
+                }
+            }
+        }, 5000); // Changed to 5 seconds for placeholder rotation
 
-        addAmbientEffects();
-
-        console.log('AI Séance - Complete System Ready');
-        console.log('Features: Memory, AI responses, typing effects, endgame sequence');
+        console.log('🕯️ AI Séance Initialized');
+        console.log('The spirit awaits...');
     </script>
 </body>
 </html>
