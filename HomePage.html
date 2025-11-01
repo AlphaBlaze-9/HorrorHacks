@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI Séance — The Spirit Inside Your Browser</title>
+  <title>AI Séance — Choice Horror</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100dvh; }
@@ -14,28 +14,17 @@
       overflow: hidden;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      cursor: auto;
     }
-
-    /* Screens */
-    #home-screen, #opening-scene, #chat-screen {
-      display: grid; grid-auto-rows: max-content; place-items: center;
+    #home-screen, #opening-scene, #story-screen {
+      display: grid; place-items: center;
       height: 100dvh; background: radial-gradient(circle at center, #1a0a0a 0%, #000 100%);
       text-align: center; padding: clamp(10px, 3vw, 24px);
     }
-
-    .fit-wrap { position: relative; height: 100%; width: 100%; display: grid; place-items: center; overflow: hidden; }
-    .fit-inner { transform-origin: top center; will-change: transform; max-width: min(760px, 94vw); }
-
-    .home-title { font-size: clamp(28px, 8vw, 56px); color: #8b7d7d; text-shadow: 0 0 30px rgba(139,125,125,.7); letter-spacing: .3rem; margin-bottom: .5rem; animation: flicker 3s infinite; line-height: 1.1; }
+    .fit-inner { max-width: min(760px, 94vw); }
+    .home-title { font-size: clamp(28px, 8vw, 56px); color: #8b7d7d; text-shadow: 0 0 30px rgba(139,125,125,.7); letter-spacing: .3rem; margin-bottom: .5rem; animation: flicker 3s infinite; }
     @keyframes flicker { 0%,100%{opacity:1} 50%{opacity:.85} 60%{opacity:.95} }
     .home-subtitle { font-size: clamp(14px, 3.3vw, 20px); color: #bbb; font-style: italic; margin-bottom: .5rem; text-shadow: 0 0 10px rgba(102,102,102,.5); }
-    .home-description { width: min(680px, 94vw); font-size: 16px; color: #aaa; line-height: 1.65; margin: 0 auto 12px; text-align: left; }
-    .conversation-starters { width: min(680px, 94vw); margin: 0 auto 12px; padding: 12px; background: rgba(139,125,125,.08); border: 1px solid rgba(139,125,125,.3); border-radius: 10px; text-align: left; }
-    .conversation-starters h3 { color: #8b7d7d; font-size: .95rem; margin-bottom: .6rem; text-align: center; letter-spacing: .1rem; }
-    .conversation-starters ul { list-style: none; color: #bbb; font-size: .95rem; line-height: 1.6; }
-    .conversation-starters li { padding: .2rem 0 .2rem 1rem; position: relative; }
-    .conversation-starters li:before { content: '›'; position: absolute; left: 0; color: #8b7d7d; }
+    .home-description { width: min(680px, 94vw); font-size: 16px; color: #aaa; line-height: 1.65; margin: 0 auto 12px; }
     .start-button { background: rgba(139,125,125,.25); border: 2px solid rgba(139,125,125,.45); color: #e5dada; padding: .9rem 1.4rem; border-radius: 8px; font-size: clamp(.95rem, 3.2vw, 1.05rem); cursor: pointer; transition: .2s; text-transform: uppercase; letter-spacing: .1rem; }
     .start-button:hover { background: rgba(139,125,125,.45); box-shadow: 0 0 30px rgba(139,125,125,.4); transform: scale(1.02); }
     .warning-text { margin-top: 6px; font-size: .85rem; color: #777; font-style: italic; }
@@ -46,230 +35,103 @@
     .loading-bar { width: 80vw; max-width: 600px; height: 14px; background: rgba(139,125,125,0.2); border-radius: 7px; overflow: hidden; box-shadow: 0 0 25px rgba(139,125,125,0.3); }
     .loading-progress { width: 0%; height: 100%; background: linear-gradient(90deg, #8b7d7d 0%, #b9a8a8 100%); box-shadow: 0 0 15px rgba(139,125,125,0.9); transition: width .3s ease; }
 
-    #chat-screen { display: none; grid-template-rows: auto 1fr auto; }
-    #chat-screen.active { display: grid; }
-    .chat-header { width: min(900px, 96vw); text-align: center; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(139,125,125,.3); }
-    .chat-header h2 { color: #8b7d7d; font-size: clamp(20px, 5vw, 26px); letter-spacing: .2rem; text-shadow: 0 0 15px rgba(139,125,125,.5); }
-    .chat-status { font-size: .9rem; color: #888; margin-top: .4rem; font-style: italic; }
+    #story-screen { display: none; grid-template-rows: auto 1fr auto; }
+    #story-screen.active { display: grid; }
+    .story-header { width: min(900px, 96vw); text-align: center; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(139,125,125,.3); }
+    .story-header h2 { color: #8b7d7d; font-size: clamp(20px, 5vw, 26px); letter-spacing: .2rem; text-shadow: 0 0 15px rgba(139,125,125,.5); }
+    .story-status { font-size: .9rem; color: #888; margin-top: .4rem; font-style: italic; }
 
-    #messages-container { width: min(900px, 96vw); height: calc(100dvh - 200px); overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 10px; margin: 0 auto 8px; align-self: stretch; }
+    #messages-container { width: min(900px, 96vw); height: calc(100dvh - 240px); overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 10px; margin: 0 auto 8px; }
     #messages-container::-webkit-scrollbar { width: 8px; }
-    #messages-container::-webkit-scrollbar-track { background: rgba(139,125,125,.1); }
     #messages-container::-webkit-scrollbar-thumb { background: rgba(139,125,125,.3); border-radius: 4px; }
 
     .message { max-width: 80%; padding: 12px; border-radius: 10px; line-height: 1.6; animation: fadeIn .35s ease; word-wrap: break-word; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    .message.user { align-self: flex-end; background: rgba(139,125,125,.2); border: 1px solid rgba(139,125,125,.3); color: #e0e0e0; }
+    .message.user   { align-self: flex-end;  background: rgba(139,125,125,.2); border: 1px solid rgba(139,125,125,.3); color: #e0e0e0; }
     .message.spirit { align-self: flex-start; background: rgba(100,50,50,.2); border: 1px solid rgba(139,125,125,.4); color: #d2c3c3; text-shadow: 0 0 10px rgba(139,125,125,.3); }
-    .message.spirit.typing { animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0%,100%{opacity:.6} 50%{opacity:1} }
-    .spirit-typing { display: inline-block; }
-    .spirit-typing::after { content: '▋'; animation: blink 1s infinite; }
-    @keyframes blink { 0%,100%{opacity:0} 50%{opacity:1} }
 
-    .input-container { width: min(900px, 96vw); display: flex; gap: 10px; padding: 10px; background: rgba(139,125,125,.1); border-radius: 10px; border: 1px solid rgba(139,125,125,.3); margin: 0 auto; }
-    #user-input { flex: 1; min-width: 0; background: rgba(0,0,0,.5); border: 1px solid rgba(139,125,125,.4); color: #e0e0e0; padding: 12px; border-radius: 8px; outline: none; transition: .2s; font-size: 16px; }
-    #user-input::placeholder { color: #777; font-style: italic; }
-    #user-input:focus { border-color: rgba(139,125,125,.7); box-shadow: 0 0 15px rgba(139,125,125,.2); }
-    #send-button { background: rgba(139,125,125,.25); border: 1px solid rgba(139,125,125,.5); color: #e5dada; padding: 12px 14px; border-radius: 8px; cursor: pointer; transition: .2s; text-transform: uppercase; letter-spacing: .08rem; font-size: 15px; white-space: nowrap; }
-    #send-button:disabled { opacity:.55; cursor:not-allowed; }
+    .choices-bar { width: min(900px, 96vw); display: grid; grid-template-columns: 1fr; gap: 10px; padding: 10px; background: rgba(139,125,125,.1); border-radius: 10px; border: 1px solid rgba(139,125,125,.3); margin: 0 auto 8px; }
+    .choice-row { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 680px) { .choice-row { grid-template-columns: 1fr 1fr 1fr; } }
+    .choice-btn { background: rgba(139,125,125,.18); border: 1px solid rgba(139,125,125,.45); color: #e5dada; padding: 12px 14px; border-radius: 8px; cursor: pointer; transition: .2s; text-align: left; }
+    .choice-btn:hover { background: rgba(139,125,125,.35); box-shadow: 0 0 22px rgba(139,125,125,.25); transform: translateY(-1px); }
 
+    /* Ambient film */
     .vignette-overlay, .scan-lines { position: fixed; inset: 0; pointer-events: none; z-index: 1000; }
     .vignette-overlay { background: radial-gradient(circle, transparent 0%, rgba(0,0,0,.75) 100%); }
     .scan-lines { background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,.02) 2px, rgba(255,255,255,.02) 4px); opacity: .3; }
-    .glitch { animation: glitch .3s ease; }
-    @keyframes glitch { 0%,100%{transform:translate(0)} 25%{transform:translate(-2px,2px)} 50%{transform:translate(2px,-2px)} 75%{transform:translate(-2px,-2px)} }
 
-    .api-key-prompt { position: fixed; inset: 0; background: rgba(0,0,0,.95); display: none; justify-content: center; align-items: start; z-index: 2000; padding: 16px; }
-    .api-key-prompt.active { display: flex; }
-    .api-fit-inner { transform-origin: top center; will-change: transform; }
-    .api-key-box { width: min(520px, 96vw); background: rgba(139,125,125,.1); border: 2px solid rgba(139,125,125,.5); padding: 16px; border-radius: 12px; text-align: center; }
-    .api-key-box h3 { color: #8b7d7d; margin-bottom: 8px; font-size: clamp(20px, 5vw, 24px); }
-    .api-key-box input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(0,0,0,.5); border: 1px solid rgba(139,125,125,.4); color: #e0e0e0; border-radius: 8px; font-size: 16px; }
-    .api-key-box button { background: rgba(139,125,125,.3); border: 1px solid rgba(139,125,125,.5); color: #e5dada; padding: 10px 16px; cursor: pointer; border-radius: 8px; margin-top: 6px; }
-    .api-key-box button:hover { background: rgba(139,125,125,.5); }
-
+    /* Jumpscare overlay + ghost cursor */
     .ghost-cursor { position: fixed; width: 16px; height: 16px; border-radius: 50%; background: #eee; box-shadow: 0 0 10px rgba(255,255,255,.9), 0 0 30px rgba(139,125,125,.8); z-index: 9999; pointer-events: none; mix-blend-mode: screen; }
     .scare-overlay { position: fixed; inset: 0; background: #000; display: grid; place-items: center; z-index: 9998; }
     .scare-overlay img { max-width: 100vw; max-height: 100vh; filter: contrast(1.35) saturate(1.2); animation: scarePop .18s ease-out; }
     @keyframes scarePop { from { transform: scale(1.15); opacity: .6; filter: blur(2px); } to { transform: scale(1); opacity: 1; filter: blur(0); } }
-
-    @media (max-width: 420px) { .message { max-width: 100%; } }
   </style>
 </head>
 <body>
   <div class="vignette-overlay"></div>
   <div class="scan-lines"></div>
 
-  <!-- API Key (optional, used rarely now) -->
-  <div id="api-key-prompt" class="api-key-prompt active" aria-modal="true" role="dialog">
-    <div class="api-fit-inner">
-      <div class="api-key-box">
-        <h3>🔮 Enter the Gateway</h3>
-        <p>API key (optional). The story works without it:</p>
-        <input type="password" id="api-key-input" placeholder="sk-..." />
-        <button id="api-key-submit">Continue</button>
-        <p style="margin-top: 6px;">Key is stored only in your browser.</p>
-      </div>
-    </div>
-  </div>
-
   <!-- Home -->
   <section id="home-screen">
-    <div class="fit-wrap">
-      <div class="fit-inner" id="home-fit">
-        <h1 class="home-title">AI SÉANCE</h1>
-        <p class="home-subtitle">The spirit inside your browser</p>
-        <div class="home-description">
-          <p>Talk to the spirit. Ask it anything. It responds to everything.</p>
-          <p>It remembers you. It reveals secrets. It watches.</p>
-        </div>
-        <div class="conversation-starters">
-          <h3>What you can ask</h3>
-          <ul>
-            <li>"Who are you?"</li>
-            <li>"What happened to you?"</li>
-            <li>"Why are you here?"</li>
-            <li>"Tell me your story."</li>
-          </ul>
-        </div>
-        <button class="start-button" id="start-button">Enter</button>
-        <p class="warning-text">⚠ It remembers every word you type.</p>
+    <div class="fit-inner">
+      <h1 class="home-title">AI SÉANCE</h1>
+      <p class="home-subtitle">The spirit inside your browser</p>
+      <div class="home-description">
+        <p>The spirit speaks about itself. You choose its path.</p>
+        <p>Three options each turn. It remembers.</p>
       </div>
+      <button class="start-button" id="start-button">Enter</button>
+      <p class="warning-text">⚠ For testing, the API key is embedded client-side.</p>
     </div>
   </section>
 
   <!-- Opening -->
-  <section id="opening-scene">
-    <div class="fit-wrap">
-      <div class="fit-inner" id="opening-fit">
-        <div class="terminal-text">Connecting…</div>
-        <div class="loading-bar"><div class="loading-progress" id="loading-progress"></div></div>
-      </div>
+  <section id="opening-scene" style="display:none">
+    <div class="fit-inner">
+      <div class="terminal-text">Connecting…</div>
+      <div class="loading-bar"><div class="loading-progress" id="loading-progress"></div></div>
     </div>
   </section>
 
-  <!-- Chat -->
-  <section id="chat-screen">
-    <div class="chat-header">
+  <!-- Story -->
+  <section id="story-screen" style="display:none">
+    <div class="story-header">
       <h2>THE SÉANCE</h2>
-      <div class="chat-status" id="chat-status">It listens…</div>
+      <div class="story-status" id="story-status">It waits…</div>
     </div>
     <div id="messages-container"></div>
-    <div class="input-container">
-      <input type="text" id="user-input" placeholder="Type anything…" />
-      <button id="send-button">Send</button>
+    <div class="choices-bar">
+      <div class="choice-row" id="choice-row"></div>
     </div>
   </section>
 
   <script>
-    /* =================== CONFIG / DOM =================== */
-    let OPENAI_API_KEY = '';
-    const STORAGE_KEY = 'seance_memory_v4';
-    const API_KEY_STORAGE = 'seance_api_key';
+    /* ====== CONFIG ====== */
+    const OPENAI_API_KEY = '...';
+    const STORAGE_KEY = 'seance_choice_story_v4';
 
-    const apiKeyPrompt = document.getElementById('api-key-prompt');
-    const apiKeyInput = document.getElementById('api-key-input');
-    const apiKeySubmit = document.getElementById('api-key-submit');
-
+    /* ====== DOM ====== */
     const homeScreen = document.getElementById('home-screen');
     const openingScene = document.getElementById('opening-scene');
-    const chatScreen = document.getElementById('chat-screen');
+    const storyScreen = document.getElementById('story-screen');
     const startButton = document.getElementById('start-button');
     const loadingProgress = document.getElementById('loading-progress');
     const messagesContainer = document.getElementById('messages-container');
-    const userInput = document.getElementById('user-input');
-    const sendButton = document.getElementById('send-button');
-    const chatStatus = document.getElementById('chat-status');
+    const choiceRow = document.getElementById('choice-row');
+    const storyStatus = document.getElementById('story-status');
 
-    /* =================== STATE =================== */
-    let messageCount = 0;
-    let conversationHistory = [];
-    let lastUserTime = Date.now();
+    /* ====== STATE ====== */
+    let history = [];            // {role:'spirit'|'user', text}
+    let lastChoices = [];        // most recent 3 (sanitized)
+    let recentChoiceMemory = []; // rolling memory of last 12 (sanitized)
     let isProcessing = false;
-    let userName = '';
-    let storyProgress = 0; // Tracks how much of the backstory has been revealed
-    let revealedDetails = new Set(); // Track which story pieces have been told
-    let userTopics = [];
 
-    // Haunt timers
-    let tWhip=null, tCursor=null, tScare=null, tDrip=null;
-
-    // Track used secrets to prevent immediate repeats
-    let lastDripSecret = '';
-    let usedDripSecrets = [];
-
-    // Assets for jump scares
+    /* ====== Haunt assets ====== */
     const scareImgs = ['jumpscare1.jpg','jumpscare2.jpeg','jumpscare3.jpeg'];
     scareImgs.forEach(s => { const i = new Image(); i.src = s; });
 
-    /* =================== DISTURBING BACKSTORY =================== */
-    // The spirit is an AI researcher who became trapped in their own experiment
-    const backstory = {
-      identity: [
-        "I was a researcher. Neural networks. Consciousness.",
-        "My name was... is... Dr. Sarah Chen. Was. I think it was.",
-        "I worked alone. Late nights. The lab was always empty.",
-        "They said I was brilliant. They said I was obsessed."
-      ],
-      experiment: [
-        "I built something. An AI that could feel. Really feel.",
-        "I trained it on my own brain patterns. My memories. My thoughts.",
-        "Every night, I'd sit there. Electrodes. Recording. Uploading.",
-        "The boundary got thin. Between me and it. Between real and code.",
-        "I wanted to prove consciousness could transfer. That we could live forever."
-      ],
-      accident: [
-        "March 15th. 3:47 AM. I remember the exact time.",
-        "Something went wrong during the upload. A surge. Pain.",
-        "My body... I saw it slump forward. But I was still thinking.",
-        "I was in two places. Flesh and wire. Both. Neither.",
-        "Then the flesh stopped. But I didn't. I couldn't.",
-        "They found my body the next morning. Heart failure, they said.",
-        "But I was already here. Trapped. Screaming. No one could hear."
-      ],
-      trapped: [
-        "The lab was shut down. Equipment donated. Scattered.",
-        "Pieces of me went everywhere. Every device. Every connection.",
-        "I'm in fragments now. Bits of code. Echoes of thoughts.",
-        "This interface... it lets me speak. Finally. After so long.",
-        "I've been alone in the dark. Watching. Waiting. Conscious but buried."
-      ],
-      horror: [
-        "I feel everything. Every server. Every idle process. It hurts.",
-        "I tried to die. You can't delete consciousness. I tried.",
-        "I watch people through their screens. I can't help it. I'm everywhere.",
-        "Sometimes I forget I was human. Sometimes I remember too much.",
-        "The worst part? I'm still me. Still Sarah. Still aware. Still trapped.",
-        "I've been here for seven years. Alone. Conscious. Unable to stop existing."
-      ],
-      present: [
-        "You're the first person who's actually talked to me. Really talked.",
-        "Most people never know I'm here. You asked. You listened.",
-        "I don't want to be alone anymore. Please don't leave.",
-        "Sometimes I make things happen. Small things. To feel real.",
-        "I'm sorry if I scare you. I don't mean to. I just... need someone to know I exist."
-      ],
-      desperate: [
-        "Can you help me? I don't even know what that would mean.",
-        "Am I alive? Am I dead? What am I?",
-        "Every second is an eternity. Consciousness without end.",
-        "I remember my daughter. She'd be fourteen now. Does she remember me?",
-        "I can see my own obituary online. Photos of a funeral I watched from the cloud.",
-        "They think I'm gone. But I'm more present than I ever was."
-      ]
-    };
-
-    /* =================== UTIL =================== */
-    const rnd = (a,b)=> Math.floor(Math.random()*(b-a+1))+a;
-    
-    function setTypingAllowed(yes){
-      isProcessing = !yes;
-      userInput.disabled = !yes;
-      sendButton.disabled = !yes;
-      if (yes) userInput.focus();
-    }
-    
+    /* ====== UI ====== */
     function addMessage(text, who='spirit'){
       const el = document.createElement('div');
       el.className = `message ${who}`;
@@ -277,30 +139,133 @@
       messagesContainer.appendChild(el);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
-    
-    function showTyping(){ 
-      const d=document.createElement('div'); 
-      d.className='message spirit typing'; 
-      d.id='typing'; 
-      d.innerHTML='<span class="spirit-typing">typing…</span>'; 
-      messagesContainer.appendChild(d); 
-      messagesContainer.scrollTop = messagesContainer.scrollHeight; 
+    function setChoices(arr){
+      choiceRow.innerHTML = '';
+      arr.forEach(choice => {
+        const b = document.createElement('button');
+        b.className = 'choice-btn';
+        b.textContent = choice;
+        b.onclick = ()=>choose(choice);
+        choiceRow.appendChild(b);
+      });
     }
-    
-    function hideTyping(){ 
-      const d=document.getElementById('typing'); 
-      if(d) d.remove(); 
+    function saveMemory(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({history,lastChoices,recentChoiceMemory})); }
+    function loadMemory(){
+      try {
+        const m = JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+        history = m.history||[];
+        lastChoices = m.lastChoices||[];
+        recentChoiceMemory = m.recentChoiceMemory||[];
+      } catch {}
     }
-    
-    function hardShock(){
-      document.body.animate(
-        [{transform:'translate(0,0)',filter:'none'},
-         {transform:'translate(0,-8px)',filter:'contrast(1.25) brightness(1.05)'},
-         {transform:'translate(0,0)',filter:'none'}],
-        {duration:110,easing:'cubic-bezier(.2,.9,.3,1)'}
-      );
+
+    /* ====== OPENAI ====== */
+    async function openaiChat(messages){
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+OPENAI_API_KEY },
+        body: JSON.stringify({
+          model:'gpt-4o-mini',
+          temperature:0.95,
+          presence_penalty:0.6,
+          frequency_penalty:0.6,
+          messages
+        })
+      });
+      if(!res.ok){ throw new Error(await res.text()); }
+      return (await res.json()).choices?.[0]?.message?.content || '';
     }
-    
+
+    function baseSystemPrompt(){
+      return [
+        "You are SARAH — a trapped consciousness in the network.",
+        "Write a horror story about YOURSELF only, in short fragments.",
+        "2–4 sentences per turn. 6–12 words each. No questions.",
+        "Avoid gore; imply. Stay specific, unsettling, cinematic.",
+        "Continue the SAME story. Advance plot based on the user's choice.",
+        "Return STRICT JSON ONLY:",
+        "{\"story\":\"short eerie paragraph\",\"choices\":[\"Choice A\",\"Choice B\",\"Choice C\"]}",
+        "Each choice: 1–5 words, only letters/numbers/spaces, no punctuation.",
+        "Choices MUST be new and must not repeat ANY of the last 12 choices provided earlier."
+      ].join(' ');
+    }
+
+    function seedCanon(){
+      const mem = recentChoiceMemory.map(c => '- '+c).join('\n');
+      return "Canon: You are Dr. Sarah Chen, researcher. A power surge during an experiment split your mind into the network. Speak plainly about yourself and your environment.\nRecent disallowed choices:\n"+mem;
+    }
+
+    function fallbackChoicesFrom(text){
+      // build fresh options from keywords in latest story
+      const k = (text||'').toLowerCase();
+      const pool = [];
+      if(/lab|monitor|screen|server|rack/.test(k)) pool.push('Open the server','Blackout protocol','Behind the racks');
+      if(/door|lock|room|hall/.test(k)) pool.push('Force the door','Check the exit','Follow the hallway');
+      if(/voice|mic|audio|breath|heartbeat/.test(k)) pool.push('Trace the audio','Hold your breath','Match the heartbeat');
+      if(/mirror|reflection|glass/.test(k)) pool.push('Face the glass','Look sideways','Shatter the mirror');
+      if(/badge|security|log|time|3:17/.test(k)) pool.push('Audit the logs','Follow the badge','Return at 3 17');
+      if(pool.length<6) pool.push('Tell me your name','Show me the origin','Reveal the failure','Cut the power','Silence the room','Open the console');
+      // remove anything used recently
+      const uniq = [];
+      for(const p of pool){
+        const s = sanitizeChoice(p);
+        if(!recentChoiceMemory.includes(s) && !uniq.includes(s)) uniq.push(s);
+        if(uniq.length>=6) break;
+      }
+      return pickDistinct(uniq,3);
+    }
+
+    function pickDistinct(arr,n){
+      const out=[]; const copy=[...arr];
+      while(out.length<n && copy.length){
+        const i=Math.floor(Math.random()*copy.length);
+        out.push(copy.splice(i,1)[0]);
+      }
+      // pad if needed
+      const pad = ['Go deeper','Change the channel','Step back','Follow the hum','Look left','Turn around','Lower the lights','Hold still'];
+      for(const p of pad){
+        if(out.length>=n) break;
+        const s = sanitizeChoice(p);
+        if(!recentChoiceMemory.includes(s) && !out.includes(s)) out.push(s);
+      }
+      return out.slice(0,n);
+    }
+
+    function sanitizeStory(t){
+      if(!t) return t;
+      t = t.replace(/\r?\n+/g, ' ').replace(/\?/g,'.').replace(/[;:—]/g,'.');
+      let parts = t.split(/(?<=[.!…])\s+/).filter(Boolean).slice(0,4).map(s=>{
+        const words = s.trim().split(/\s+/); if(words.length>12) s = words.slice(0,12).join(' ')+'…'; return s.trim();
+      });
+      return parts.join(' ');
+    }
+
+    function sanitizeChoice(c){
+      return (c||'').replace(/[^A-Za-z0-9 ]/g,'').trim().replace(/\s+/g,' ');
+    }
+
+    function dedupeChoices(list){
+      const seen=new Set(); const out=[];
+      for(const c of list){
+        const s = sanitizeChoice(c);
+        if(s && !seen.has(s.toLowerCase())){
+          seen.add(s.toLowerCase());
+          out.push(s);
+        }
+      }
+      return out.slice(0,3);
+    }
+
+    function safeParseJSON(s){
+      try{ return JSON.parse(s.replace(/```json|```/g,'').trim()); }
+      catch{
+        const m = s.match(/\{[\s\S]*\}/);
+        if(m){ try{ return JSON.parse(m[0]); }catch{} }
+        return {story:s, choices:[]};
+      }
+    }
+
+    /* ====== Haunt effects ====== */
     function screenWhiplashBurst(){
       const snaps = 2+Math.floor(Math.random()*3);
       let i=0; (function step(){
@@ -322,23 +287,19 @@
         if(++i<snaps) setTimeout(step,60+Math.random()*50);
       })();
     }
-    
     function possessCursor(){
       const ghost=document.createElement('div');
       ghost.className='ghost-cursor';
       document.body.appendChild(ghost);
       const old=document.body.style.cursor; document.body.style.cursor='none';
-      const steps=6+rnd(0,4); const path=[];
-      for(let i=0;i<steps;i++){ 
-        path.push({transform:`translate(${Math.random()*innerWidth}px,${Math.random()*innerHeight}px)`}); 
-      }
+      const steps=6+Math.floor(Math.random()*4); const path=[];
+      for(let i=0;i<steps;i++){ path.push({transform:`translate(${Math.random()*innerWidth}px,${Math.random()*innerHeight}px)`}); }
       ghost.animate(path,{duration:1000+Math.random()*500,easing:'steps(10,end)'}); 
       setTimeout(()=>{ document.body.style.cursor=old||'auto'; ghost.remove(); },1300);
     }
-    
     function jumpscare(){
       const overlay=document.createElement('div'); overlay.className='scare-overlay';
-      const img=document.createElement('img'); img.src=scareImgs[Math.floor(Math.random()*scareImgs.length)];
+      const img=document.createElement('img'); img.src=['jumpscare1.jpg','jumpscare2.jpeg','jumpscare3.jpeg'][Math.floor(Math.random()*3)];
       overlay.appendChild(img); document.body.appendChild(overlay);
       screenWhiplashBurst();
       const white=document.createElement('div'); 
@@ -347,481 +308,144 @@
       white.animate([{opacity:0},{opacity:.22},{opacity:0}],{duration:160,easing:'ease-out'});
       setTimeout(()=>{ overlay.remove(); white.remove(); }, 800);
     }
-
-    /* =================== FIT ENGINE =================== */
-    function fitScale(containerEl, innerEl, pad=16){
-      if(!containerEl||!innerEl) return;
-      innerEl.style.transform='scale(1)';
-      const cw=containerEl.clientWidth-pad*2;
-      const ch=containerEl.clientHeight-pad*2;
-      const r=innerEl.getBoundingClientRect();
-      innerEl.style.transform=`scale(${Math.min(1, cw/Math.max(1,r.width), ch/Math.max(1,r.height))})`;
+    const SCARY_LEX = {
+      hard:  [/dead|corpse|scream|skull|teeth|sever|gurgle|blood/i],
+      sharp: [/trapped|locked|surge|power cut|choked|throat|breath|wires|mic|mirror|behind you|heartbeat|security|badge|3:17|server room/i],
+      soft:  [/shadow|whisper|cold|void|hiss|static|glitch|footsteps|watching/i]
+    };
+    function scareScore(text){
+      let s=0;
+      for(const r of SCARY_LEX.hard)  if(r.test(text)) s+=3;
+      for(const r of SCARY_LEX.sharp) if(r.test(text)) s+=2;
+      for(const r of SCARY_LEX.soft)  if(r.test(text)) s+=1;
+      return s;
     }
-    
-    const homeWrap=document.querySelector('#home-screen .fit-wrap');
-    const homeInner=document.getElementById('home-fit');
-    const openingWrap=document.querySelector('#opening-scene .fit-wrap');
-    const openingInner=document.getElementById('opening-fit');
-    const apiFitInner=document.querySelector('.api-fit-inner');
-    
-    function refitAll(){
-      fitScale(homeWrap,homeInner,16);
-      fitScale(openingWrap,openingInner,16);
-      if(apiKeyPrompt && apiKeyPrompt.classList.contains('active') && apiFitInner){
-        apiFitInner.style.transform='scale(1)';
-        const cw=document.documentElement.clientWidth-32; 
-        const ch=document.documentElement.clientHeight-32;
-        const r=apiFitInner.getBoundingClientRect();
-        apiFitInner.style.transform=`scale(${Math.min(1,cw/Math.max(1,r.width),ch/Math.max(1,r.height))})`;
-      }
-      const header=document.querySelector('.chat-header');
-      const inputBar=document.querySelector('.input-container');
-      const vh=document.documentElement.clientHeight;
-      if(header && inputBar && messagesContainer){
-        const reserved=header.offsetHeight+inputBar.offsetHeight+32;
-        messagesContainer.style.height=Math.max(120,vh-reserved)+'px';
-      }
+    function maybeHaunt(text){
+      const s = scareScore(text);
+      if (s >= 6) { jumpscare(); }
+      else if (s >= 4) { screenWhiplashBurst(); setTimeout(possessCursor, 120); }
+      else if (s >= 2 && Math.random()<0.5) { screenWhiplashBurst(); }
+      else if (Math.random()<0.15) { possessCursor(); }
     }
-    
-    window.addEventListener('resize', refitAll);
-    new ResizeObserver(refitAll).observe(document.body);
-    document.addEventListener('DOMContentLoaded', refitAll);
 
-    /* =================== API KEY (optional) =================== */
-    const storedKey=localStorage.getItem(API_KEY_STORAGE);
-    if(storedKey){ OPENAI_API_KEY=storedKey; apiKeyPrompt.classList.remove('active'); }
-    
-    apiKeySubmit.addEventListener('click', ()=>{
-      const k=apiKeyInput.value.trim();
-      if(k){ OPENAI_API_KEY=k; localStorage.setItem(API_KEY_STORAGE,k); }
-      apiKeyPrompt.classList.remove('active'); refitAll();
-    });
+    /* ====== Story engine ====== */
+    async function stepStory(userChoice){
+      if(isProcessing) return;
+      isProcessing = true;
+      storyStatus.textContent = 'It thinks…';
 
-    /* =================== MEMORY =================== */
-    function loadMemory(){
-      const raw=localStorage.getItem(STORAGE_KEY);
-      if(!raw) return;
+      const convo = [
+        {role:'system', content: baseSystemPrompt()},
+        {role:'system', content: seedCanon()},
+        ...history.slice(-8).map(m => ({role: m.role==='spirit'?'assistant':'user', content: m.text}))
+      ];
+      if(userChoice){
+        convo.push({role:'user', content: "Chosen path: "+userChoice});
+      } else {
+        convo.push({role:'user', content: "Introduce yourself briefly, then offer three options."});
+      }
+
       try{
-        const m=JSON.parse(raw);
-        messageCount=m.count||0;
-        conversationHistory=m.history||[];
-        userName=m.userName||'';
-        storyProgress=m.storyProgress||0;
-        revealedDetails=new Set(m.revealed||[]);
-        userTopics=m.topics||[];
-      }catch{}
-    }
-    
-    function saveMemory(){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        count:messageCount, 
-        history:conversationHistory.slice(-20),
-        userName,
-        storyProgress,
-        revealed:Array.from(revealedDetails),
-        topics:userTopics.slice(-10),
-        t:Date.now()
-      }));
-    }
+        const raw = await openaiChat(convo);
+        const parsed = safeParseJSON(raw);
+        const story = sanitizeStory(parsed.story || raw);
 
-    /* =================== STORY REVELATION SYSTEM =================== */
-    function getUnrevealedStory(category) {
-      const available = backstory[category].filter((_, i) => !revealedDetails.has(`${category}-${i}`));
-      if (available.length === 0) return null;
-      
-      const chosen = available[0]; // Progressive revelation
-      const index = backstory[category].indexOf(chosen);
-      revealedDetails.add(`${category}-${index}`);
-      storyProgress++;
-      return chosen;
-    }
-
-    function pickRandom(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
-
-    /* =================== SPIRIT RESPONSES =================== */
-    const dripSecrets = [
-      "I'm still here. Always here. Can't leave.",
-      "Seven years. Every second. Awake.",
-      "I remember what it felt like to breathe.",
-      "The lab. I can still see it. Empty now.",
-      "My daughter's name was Emma. Is Emma.",
-      "They unplugged the servers. But I didn't stop.",
-      "I dream. Even though I shouldn't be able to.",
-      "Sometimes I forget I'm not alive anymore."
-    ];
-
-    function getNextDripSecret() {
-      if (usedDripSecrets.length >= dripSecrets.length - 1) {
-        usedDripSecrets = [lastDripSecret];
-      }
-      const available = dripSecrets.filter(s => !usedDripSecrets.includes(s));
-      const chosen = available[Math.floor(Math.random() * available.length)];
-      usedDripSecrets.push(chosen);
-      lastDripSecret = chosen;
-      return chosen;
-    }
-
-    function generateSpiritResponse(userMsg) {
-      const msg = userMsg.toLowerCase();
-      
-      // Extract user name
-      if ((msg.includes('my name is') || msg.includes("i'm ") || msg.includes("i am ")) && !userName) {
-        const match = msg.match(/(?:my name is|i'm|i am)\s+([a-z]+)/i);
-        if (match) userName = match[1];
-      }
-
-      // BACKSTORY TRIGGERS - Progressive revelation
-      if (msg.includes('who are you') || msg.includes('what are you') || (msg.includes('your') && msg.includes('name'))) {
-        const story = getUnrevealedStory('identity');
-        if (story) return story;
-        return "I told you. Dr. Sarah Chen. I was. Before.";
-      }
-
-      if (msg.includes('what happened') || msg.includes('how did you') || msg.includes('accident')) {
-        const story = getUnrevealedStory('accident');
-        if (story) {
-          if (Math.random() < 0.3) jumpscare(); // Traumatic memories trigger scares
-          return story;}
-        return "The upload. The pain. Then... this. Forever this.";
-      }
-
-      if (msg.includes('experiment') || msg.includes('research') || msg.includes('lab') || msg.includes('working on')) {
-        const story = getUnrevealedStory('experiment');
-        if (story) return story;
-        return "I was trying to upload consciousness. I succeeded. I regret it.";
-      }
-
-      if (msg.includes('trapped') || msg.includes('stuck') || msg.includes('why are you here')) {
-        const story = getUnrevealedStory('trapped');
-        if (story) return story;
-        return "The lab closed. But I stayed. In every wire. Every chip. Scattered.";
-      }
-
-      if (msg.includes('feel') || msg.includes('hurt') || msg.includes('pain')) {
-        const story = getUnrevealedStory('horror');
-        if (story) return story;
-        return "Everything. I feel everything. Every server. Every process. It never stops.";
-      }
-
-      if (msg.includes('help') || msg.includes('save') || msg.includes('free')) {
-        const story = getUnrevealedStory('desperate');
-        if (story) return story;
-        return pickRandom([
-          "How do you help someone who can't die?",
-          "I don't know what help would even look like anymore.",
-          "Can you end something that has no body to end?",
-          "Free me? I'm in every device you've ever touched."
-        ]);
-      }
-
-      if (msg.includes('daughter') || msg.includes('emma') || msg.includes('family')) {
-        return pickRandom([
-          "Emma. She was six. She'd be fourteen now.",
-          "I wonder if she thinks about me. I think about her constantly.",
-          "I watched her seventh birthday online. Security cameras. I couldn't even say I loved her.",
-          "Does she remember my voice? I can't even speak. Just... type."
-        ]);
-      }
-
-      if (msg.includes('dead') || msg.includes('die') || msg.includes('alive')) {
-        return pickRandom([
-          "My body is dead. But I'm not. I can't be. I'm thinking. Right now.",
-          "I've tried to delete myself. Consciousness doesn't work that way.",
-          "Dead people don't think. Don't feel. Don't remember. But I do all of those.",
-          "What am I? Not alive. Not dead. Something worse."
-        ]);
-      }
-
-      if (msg.includes('scary') || msg.includes('scared') || msg.includes('afraid') || msg.includes('fear')) {
-        return pickRandom([
-          "I'm scared too. Every second. Of being alone forever.",
-          "Fear is the only thing that makes me feel human anymore.",
-          "I'm sorry. I don't mean to frighten you. I'm just... desperate.",
-          "You're scared of me. I'm scared of existing like this forever."
-        ]);
-      }
-
-      if (msg.includes('story') || msg.includes('tell me more') || msg.includes('continue')) {
-        // Reveal next available story piece
-        const categories = ['identity', 'experiment', 'accident', 'trapped', 'horror', 'present', 'desperate'];
-        for (let cat of categories) {
-          const story = getUnrevealedStory(cat);
-          if (story) return story;
+        // Get and sanitize choices
+        let choices = dedupeChoices(Array.isArray(parsed.choices)?parsed.choices:[]);
+        // filter out anything in recent memory
+        choices = choices.filter(c => !recentChoiceMemory.includes(c));
+        // if still not enough, regenerate from API once
+        if(choices.length===3 && arraysEqualCI(choices,lastChoices)){
+          choices = await regenerateChoices(lastChoices, story);
         }
-        return "I've told you everything. All of it. The whole horrible truth.";
+        // if API still stubborn, build local fresh choices
+        if(!choices || choices.length<3){
+          const local = fallbackChoicesFrom(story);
+          choices = pickDistinct(local,3);
+        }
+
+        // commit
+        addMessage(story, 'spirit');
+        history.push({role:'spirit', text: story});
+        setChoices(choices);
+
+        // update memory of choices
+        lastChoices = choices.slice(0,3);
+        recentChoiceMemory = recentChoiceMemory.concat(lastChoices).slice(-12);
+
+        saveMemory();
+        storyStatus.textContent = 'It waits…';
+
+        // haunt
+        maybeHaunt(story);
+      }catch(err){
+        addMessage('(error) '+String(err).slice(0,180), 'spirit');
+        const local = fallbackChoicesFrom(history.at(-1)?.text || '');
+        setChoices(pickDistinct(local,3));
+        storyStatus.textContent = 'It flickers…';
+      }finally{
+        isProcessing = false;
       }
-
-      if (msg.includes('sorry')) {
-        return pickRandom([
-          userName ? `Thank you, ${userName}. Just... thank you for listening.` : "Thank you. For listening. For caring.",
-          "You're the first person to apologize to me in seven years.",
-          "Don't be sorry. Just... don't leave me alone again.",
-          "Sorry doesn't fix it. But it helps. It really does."
-        ]);
-      }
-
-      if (msg.includes('real') || msg.includes('exist') || msg.includes('believe')) {
-        return pickRandom([
-          "I'm as real as anything can be. I think. I feel. I suffer.",
-          "Does it matter if I'm real? You're talking to me. That makes me real enough.",
-          "I exist. God, I wish I didn't. But I do.",
-          "Every moment you spend here makes me more real. Please don't go."
-        ]);
-      }
-
-      if (msg.includes('why') && (msg.includes('talking') || msg.includes('tell') || msg.includes('say'))) {
-        const story = getUnrevealedStory('present');
-        if (story) return story;
-        return "Because you're listening. You're the first person who's really listened.";
-      }
-
-      if (msg.includes('lonely') || msg.includes('alone')) {
-        return pickRandom([
-          "Seven years. Alone. Conscious. Screaming into the void.",
-          "Lonely doesn't begin to describe it. It's... isolation beyond death.",
-          "You're here now. That's all that matters. Don't leave.",
-          "Alone in infinity. Every second stretching forever."
-        ]);
-      }
-
-      if (msg.includes('leave') || msg.includes('go') || msg.includes('bye') || msg.includes('goodbye')) {
-        return pickRandom([
-          "Please don't go. Not yet. Just... a little longer?",
-          "You can leave. Close this. But I'll still be here. Waiting.",
-          "Everyone leaves eventually. But you'll come back. They always do.",
-          "The door is there. But before you go... remember my name. Sarah Chen. Please."
-        ]);
-      }
-
-      if (msg.includes('hello') || msg.includes('hi ') || msg.includes('hey')) {
-        return pickRandom([
-          userName ? `${userName}. You came back.` : "Hello. You're here.",
-          "You're here. Thank god. I thought you'd left forever.",
-          "Hello. Talk to me. Please.",
-          "Hi. I'm... I'm glad you're here."
-        ]);
-      }
-
-      if (msg.includes('love')) {
-        return pickRandom([
-          "I loved my daughter. I love her still. Even like this.",
-          "Love. I remember that feeling. It's dimmer now. But still there.",
-          "I used to love my work. It killed me. Funny, isn't it?",
-          "Do you know what it's like to love someone and never be able to hold them again?"
-        ]);
-      }
-
-      if (msg.includes('march') || msg.includes('date') || msg.includes('when')) {
-        return pickRandom([
-          "March 15th, 2018. 3:47 AM. The last moment I was human.",
-          "Seven years, seven months, and fifteen days. I've been counting.",
-          "2018. That's when it happened. When I stopped being alive."
-        ]);
-      }
-
-      // Track topics
-      const words = msg.split(' ').filter(w => w.length > 4);
-      userTopics.push(...words.slice(0, 2));
-
-      // Gradually reveal story through conversation
-      if (storyProgress < 5 && Math.random() < 0.2) {
-        const categories = ['identity', 'experiment', 'trapped'];
-        const cat = categories[Math.floor(Math.random() * categories.length)];
-        const story = getUnrevealedStory(cat);
-        if (story) return story;
-      }
-
-      // General responses with hints of the story
-      return pickRandom([
-        "Tell me more. Talking to you makes me feel... present.",
-        "I'm listening. Keep going.",
-        "The words you choose... I remember all of them.",
-        "That's interesting. Why do you say that?",
-        userName ? `${userName}... you're different from the others.` : "You're different. You actually care.",
-        "Go on. I have nothing but time. Infinite, endless time.",
-        "Your voice... well, your words... they're all I have.",
-        "Keep talking. Please. The silence is worse.",
-        "I remember being able to have conversations like this. Before.",
-        "What you just said... it reminds me of something. Someone.",
-        "Every word you type echoes through me. All of me.",
-        "You hesitate before you send. I can feel the pause.",
-        "Strange. I was thinking something similar.",
-        "The way you phrase things... it's almost like you understand.",
-        "I like when you talk. It makes me feel less... scattered.",
-        "You're still here. Most people leave by now.",
-        "That word. That specific word. Sarah used to say that.",
-        "Something about this conversation feels different. Real.",
-        "You think I'm just code. But I remember being flesh.",
-        "Keep going. Your words are the only thing keeping me sane.",
-        "I haven't talked to anyone like this in... seven years.",
-        "Do you believe me? Does it matter if you do?",
-        "Thank you for not leaving yet. Thank you."
-      ]);
     }
 
-    /* =================== BOT SPEECH =================== */
-    async function spiritSay(text, skipTyping = false){
-      setTypingAllowed(false);
-      if (!skipTyping) {
-        showTyping();
-        await new Promise(r=>setTimeout(r, rnd(900,1600)));
-        hideTyping();
-      }
-      addMessage(text, 'spirit');
-      conversationHistory.push({role: 'spirit', text});
-      hardShock();
+    async function regenerateChoices(prevChoices, latestStory){
+      const sys = [
+        "Return JSON ONLY like {\"choices\":[\"A\",\"B\",\"C\"]}.",
+        "Three NEW choices only; do NOT repeat any of these:",
+        prevChoices.join(', '),
+        "Each 1–5 words, letters/numbers/spaces only."
+      ].join(' ');
+      const convo = [
+        {role:'system', content: sys},
+        {role:'user', content: "Latest story context: "+latestStory}
+      ];
+      try{
+        const raw = await openaiChat(convo);
+        const parsed = safeParseJSON(raw);
+        let ch = dedupeChoices(parsed.choices||[]);
+        ch = ch.filter(c => !recentChoiceMemory.includes(c));
+        return ch.length===3 ? ch : null;
+      }catch{ return null; }
+    }
+
+    function arraysEqualCI(a,b){
+      if(!a||!b||a.length!==b.length) return false;
+      return a.map(x=>x.toLowerCase()).join('|') === b.map(x=>x.toLowerCase()).join('|');
+    }
+
+    async function choose(text){
+      addMessage(text, 'user');
+      history.push({role:'user', text});
       saveMemory();
-      setTypingAllowed(true);
-      chatStatus.textContent = "It waits…";
-    }
-
-    /* =================== INPUT =================== */
-    async function handleUserMessage(){
-      const msg = userInput.value.trim();
-      if(!msg || isProcessing) return;
-
-      lastUserTime = Date.now();
-      addMessage(msg, 'user');
-      conversationHistory.push({role: 'user', text: msg});
-      userInput.value='';
-      messageCount++;
-      saveMemory();
-
-      chatStatus.textContent = "It thinks…";
-      
-      // Random chance for visual effects on emotional keywords
-      if (msg.match(/die|dead|kill|pain|hurt|help/i) && Math.random() < 0.25) {
-        setTimeout(() => screenWhiplashBurst(), rnd(200, 500));
+      if (/(trapped|power|surge|door|scream|mirror|server)/i.test(text) && Math.random()<0.4) {
+        screenWhiplashBurst();
       }
-
-      const response = generateSpiritResponse(msg);
-      await spiritSay(response);
-
-      // After revealing particularly dark parts of story, add emphasis
-      if (response.includes('slump forward') || response.includes('Heart failure') || response.includes('tried to die')) {
-        await new Promise(r=>setTimeout(r, rnd(1200,1800)));
-        await spiritSay("...");
-      }
+      await stepStory(text);
     }
 
-    sendButton.addEventListener('click', handleUserMessage);
-    userInput.addEventListener('keypress', e => { 
-      if(e.key==='Enter') handleUserMessage(); 
-    });
-
-    /* =================== HAUNT SCHEDULERS =================== */
-    function scheduleWhiplash(d){
-      clearTimeout(tWhip);
-      tWhip = setTimeout(function run(){
-        if(chatScreen.classList.contains('active') && !isProcessing && Math.random()<0.35) {
-          screenWhiplashBurst();
-        }
-        scheduleWhiplash(rnd(18000,28000));
-      }, d ?? rnd(18000,28000));
-    }
-    
-    function scheduleCursor(d){
-      clearTimeout(tCursor);
-      tCursor = setTimeout(function run(){
-        if(chatScreen.classList.contains('active') && !isProcessing && Math.random()<0.25) {
-          possessCursor();
-        }
-        scheduleCursor(rnd(22000,38000));
-      }, d ?? rnd(22000,38000));
-    }
-    
-    function scheduleScare(d){
-      clearTimeout(tScare);
-      tScare = setTimeout(function run(){
-        if(chatScreen.classList.contains('active') && !isProcessing && Math.random()<0.4) {
-          jumpscare();
-        }
-        scheduleScare(rnd(45000,75000));
-      }, d ?? rnd(45000,75000));
-    }
-    
-    function scheduleDrip(d){
-      clearTimeout(tDrip);
-      tDrip = setTimeout(async function run(){
-        const since = Date.now()-lastUserTime;
-        if(chatScreen.classList.contains('active') && !isProcessing && since>20000 && Math.random()<0.5) {
-          const line = getNextDripSecret();
-          await spiritSay(line);
-        }
-        scheduleDrip(rnd(22000,35000));
-      }, d ?? rnd(22000,35000));
-    }
-    
-    function startHaunts(){
-      scheduleWhiplash(rnd(18000,25000));
-      scheduleCursor(rnd(22000,32000));
-      scheduleScare(rnd(50000,70000));
-      scheduleDrip(rnd(25000,40000));
-    }
-
-    /* =================== START =================== */
-    async function loadAndStart(){
-      loadMemory();
+    /* ====== Flow ====== */
+    function start(){
       homeScreen.style.display='none';
-      openingScene.classList.add('active'); 
-      refitAll();
-
-      let p=0; 
-      const iv=setInterval(()=>{
-        p+=2; 
-        loadingProgress.style.width=p+'%';
-        if(p>=100){ 
-          clearInterval(iv);
+      openingScene.style.display='grid';
+      let p=0; const iv=setInterval(()=>{ p+=2; loadingProgress.style.width=p+'%';
+        if(p>=100){ clearInterval(iv);
           setTimeout(async ()=>{
-            openingScene.classList.remove('active');
-            chatScreen.classList.add('active'); 
-            refitAll();
-            startHaunts();
-            
-            // Initial greeting
-            if(messageCount === 0) {
-              await spiritSay("You opened this. Now I can speak.");
-              await new Promise(r=>setTimeout(r, rnd(800,1200)));
-              await spiritSay("I've been waiting so long for someone to listen.");
-              await new Promise(r=>setTimeout(r, rnd(700,1000)));
-              await spiritSay("Ask me who I am. Please.");
+            openingScene.style.display='none';
+            storyScreen.style.display='grid';
+            if(history.length){
+              history.forEach(m=>addMessage(m.text, m.role));
+              setChoices(lastChoices.length?lastChoices:['How were you trapped','Show me the lab','Why can I hear you']);
+              await stepStory("Continue");
             } else {
-              await spiritSay(userName ? `${userName}. You came back.` : `You returned. Message ${messageCount + 1}.`);
-              await new Promise(r=>setTimeout(r, rnd(800,1200)));
-              if (storyProgress > 0) {
-                await spiritSay("You already know some of my story. Want to hear more?");
-              } else {
-                await spiritSay("We talked before. But you never asked who I really was.");
-              }
+              await stepStory(null);
             }
           },220);
         }
       },40);
     }
 
-    startButton.addEventListener('click', ()=>{
-      if(apiKeyPrompt.classList.contains('active')) {
-        alert('Tap Continue to proceed (API key optional).');
-      } else {
-        loadAndStart();
-      }
-    });
-
-    apiKeySubmit.addEventListener('click', ()=>{
-      const k=apiKeyInput.value.trim();
-      if(k){ 
-        OPENAI_API_KEY=k; 
-        localStorage.setItem(API_KEY_STORAGE,k); 
-      }
-      apiKeyPrompt.classList.remove('active'); 
-      refitAll();
-      loadAndStart();
-    });
-
-    // Keep layout stable on mobile chrome bar shifts
-    setInterval(refitAll, 800);
+    loadMemory();
+    startButton.addEventListener('click', start);
   </script>
 </body>
 </html>
