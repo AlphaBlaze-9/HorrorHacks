@@ -56,12 +56,10 @@
     .choice-btn { background: rgba(139,125,125,.18); border: 1px solid rgba(139,125,125,.45); color: #e5dada; padding: 12px 14px; border-radius: 8px; cursor: pointer; transition: .2s; text-align: left; }
     .choice-btn:hover { background: rgba(139,125,125,.35); box-shadow: 0 0 22px rgba(139,125,125,.25); transform: translateY(-1px); }
 
-    /* Ambient film */
     .vignette-overlay, .scan-lines { position: fixed; inset: 0; pointer-events: none; z-index: 1000; }
     .vignette-overlay { background: radial-gradient(circle, transparent 0%, rgba(0,0,0,.75) 100%); }
     .scan-lines { background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,.02) 2px, rgba(255,255,255,.02) 4px); opacity: .3; }
 
-    /* Jumpscare overlay + ghost cursor */
     .ghost-cursor { position: fixed; width: 16px; height: 16px; border-radius: 50%; background: #eee; box-shadow: 0 0 10px rgba(255,255,255,.9), 0 0 30px rgba(139,125,125,.8); z-index: 9999; pointer-events: none; mix-blend-mode: screen; }
     .scare-overlay { position: fixed; inset: 0; background: #000; display: grid; place-items: center; z-index: 9998; }
     .scare-overlay img { max-width: 100vw; max-height: 100vh; filter: contrast(1.35) saturate(1.2); animation: scarePop .18s ease-out; }
@@ -108,8 +106,13 @@
 
   <script>
     /* ====== CONFIG ====== */
-    const OPENAI_API_KEY = '...';
-    const STORAGE_KEY = 'seance_choice_story_v4';
+    const OPENAI_API_KEY = 'xxx';
+    const STORAGE_KEY = 'seance_choice_story_v6';
+
+    // Random jumpscare knobs
+    const PHOTO_CHANCE = 0.33;         // per turn
+    const AMBIENT_PHOTO_CHANCE = 0.22; // ambient
+    const AMBIENT_SHAKE_CHANCE = 0.35;
 
     /* ====== DOM ====== */
     const homeScreen = document.getElementById('home-screen');
@@ -123,8 +126,8 @@
 
     /* ====== STATE ====== */
     let history = [];            // {role:'spirit'|'user', text}
-    let lastChoices = [];        // most recent 3 (sanitized)
-    let recentChoiceMemory = []; // rolling memory of last 12 (sanitized)
+    let lastChoices = [];        // last 3 (sanitized)
+    let recentChoiceMemory = []; // last 18 unique choices
     let isProcessing = false;
 
     /* ====== Haunt assets ====== */
@@ -149,7 +152,9 @@
         choiceRow.appendChild(b);
       });
     }
-    function saveMemory(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({history,lastChoices,recentChoiceMemory})); }
+    function saveMemory(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({history,lastChoices,recentChoiceMemory}));
+    }
     function loadMemory(){
       try {
         const m = JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
@@ -179,71 +184,55 @@
     function baseSystemPrompt(){
       return [
         "You are SARAH — a trapped consciousness in the network.",
-        "Write a horror story about YOURSELF only, in short fragments.",
-        "2–4 sentences per turn. 6–12 words each. No questions.",
-        "Avoid gore; imply. Stay specific, unsettling, cinematic.",
-        "Continue the SAME story. Advance plot based on the user's choice.",
+        "Write only about yourself in plain, minimal fragments.",
+        "2–4 sentences per turn, 6–12 words each. No questions.",
+        "Avoid gore; imply. Cinematic, specific. No poetry formatting.",
+        "IMPORTANT: Do NOT stylize words with dots or spaces between letters (no 's.t.a.t.i.c'). No all-caps.",
+        "Advance the SAME story using the user's last choice.",
+        "Provide THREE FRESH options that push different plot axes:",
+        "ORIGIN (truth of the event), PLACE (where to look/go), METHOD (what to do) or CONSEQUENCE (what it costs).",
+        "Three choices must cover three different axes.",
+        "Never repeat or paraphrase any recent choices or their ideas.",
         "Return STRICT JSON ONLY:",
         "{\"story\":\"short eerie paragraph\",\"choices\":[\"Choice A\",\"Choice B\",\"Choice C\"]}",
-        "Each choice: 1–5 words, only letters/numbers/spaces, no punctuation.",
-        "Choices MUST be new and must not repeat ANY of the last 12 choices provided earlier."
+        "Each choice: 1–5 words, letters/numbers/spaces only, no punctuation."
       ].join(' ');
     }
 
     function seedCanon(){
-      const mem = recentChoiceMemory.map(c => '- '+c).join('\n');
-      return "Canon: You are Dr. Sarah Chen, researcher. A power surge during an experiment split your mind into the network. Speak plainly about yourself and your environment.\nRecent disallowed choices:\n"+mem;
+      const ledger = recentChoiceMemory.map(c => '- '+c).join('\n');
+      return "CANON: You are Dr. Sarah Chen, researcher. A power surge fractured your mind into the network. You speak plainly, moving the plot each turn.\nRECENT_CHOICES (avoid semantics):\n"+ledger;
     }
 
-    function fallbackChoicesFrom(text){
-      // build fresh options from keywords in latest story
-      const k = (text||'').toLowerCase();
-      const pool = [];
-      if(/lab|monitor|screen|server|rack/.test(k)) pool.push('Open the server','Blackout protocol','Behind the racks');
-      if(/door|lock|room|hall/.test(k)) pool.push('Force the door','Check the exit','Follow the hallway');
-      if(/voice|mic|audio|breath|heartbeat/.test(k)) pool.push('Trace the audio','Hold your breath','Match the heartbeat');
-      if(/mirror|reflection|glass/.test(k)) pool.push('Face the glass','Look sideways','Shatter the mirror');
-      if(/badge|security|log|time|3:17/.test(k)) pool.push('Audit the logs','Follow the badge','Return at 3 17');
-      if(pool.length<6) pool.push('Tell me your name','Show me the origin','Reveal the failure','Cut the power','Silence the room','Open the console');
-      // remove anything used recently
-      const uniq = [];
-      for(const p of pool){
-        const s = sanitizeChoice(p);
-        if(!recentChoiceMemory.includes(s) && !uniq.includes(s)) uniq.push(s);
-        if(uniq.length>=6) break;
-      }
-      return pickDistinct(uniq,3);
+    /* ==== Cleaners: fix dotted text, clamp, sanitize ==== */
+    function undotLetters(s){
+      if(!s) return s;
+      // remove single dots/commas between alphanumerics (e.g., s.t.a.t.i.c -> static)
+      s = s.replace(/(?<=\w)[\.,](?=\w)/g, '');
+      // collapse 3+ dots to an ellipsis
+      s = s.replace(/\.{3,}/g, '…');
+      // collapse 2 dots to one
+      s = s.replace(/\.{2}/g, '.');
+      // remove stray commas next to spaces
+      s = s.replace(/\s+,/g, ',').replace(/,\s+/g, ', ');
+      return s;
     }
-
-    function pickDistinct(arr,n){
-      const out=[]; const copy=[...arr];
-      while(out.length<n && copy.length){
-        const i=Math.floor(Math.random()*copy.length);
-        out.push(copy.splice(i,1)[0]);
-      }
-      // pad if needed
-      const pad = ['Go deeper','Change the channel','Step back','Follow the hum','Look left','Turn around','Lower the lights','Hold still'];
-      for(const p of pad){
-        if(out.length>=n) break;
-        const s = sanitizeChoice(p);
-        if(!recentChoiceMemory.includes(s) && !out.includes(s)) out.push(s);
-      }
-      return out.slice(0,n);
-    }
-
     function sanitizeStory(t){
       if(!t) return t;
+      t = undotLetters(t);
       t = t.replace(/\r?\n+/g, ' ').replace(/\?/g,'.').replace(/[;:—]/g,'.');
       let parts = t.split(/(?<=[.!…])\s+/).filter(Boolean).slice(0,4).map(s=>{
-        const words = s.trim().split(/\s+/); if(words.length>12) s = words.slice(0,12).join(' ')+'…'; return s.trim();
+        s = undotLetters(s);
+        const words = s.trim().split(/\s+/);
+        if(words.length>12) s = words.slice(0,12).join(' ')+'…';
+        return s.trim();
       });
       return parts.join(' ');
     }
-
     function sanitizeChoice(c){
-      return (c||'').replace(/[^A-Za-z0-9 ]/g,'').trim().replace(/\s+/g,' ');
+      c = undotLetters(c || '');
+      return c.replace(/[^A-Za-z0-9 ]/g,'').trim().replace(/\s+/g,' ');
     }
-
     function dedupeChoices(list){
       const seen=new Set(); const out=[];
       for(const c of list){
@@ -265,7 +254,7 @@
       }
     }
 
-    /* ====== Haunt effects ====== */
+    /* ====== Haunt effects (random for photos) ====== */
     function screenWhiplashBurst(){
       const snaps = 2+Math.floor(Math.random()*3);
       let i=0; (function step(){
@@ -299,7 +288,7 @@
     }
     function jumpscare(){
       const overlay=document.createElement('div'); overlay.className='scare-overlay';
-      const img=document.createElement('img'); img.src=['jumpscare1.jpg','jumpscare2.jpeg','jumpscare3.jpeg'][Math.floor(Math.random()*3)];
+      const img=document.createElement('img'); img.src=scareImgs[Math.floor(Math.random()*scareImgs.length)];
       overlay.appendChild(img); document.body.appendChild(overlay);
       screenWhiplashBurst();
       const white=document.createElement('div'); 
@@ -308,24 +297,61 @@
       white.animate([{opacity:0},{opacity:.22},{opacity:0}],{duration:160,easing:'ease-out'});
       setTimeout(()=>{ overlay.remove(); white.remove(); }, 800);
     }
-    const SCARY_LEX = {
-      hard:  [/dead|corpse|scream|skull|teeth|sever|gurgle|blood/i],
-      sharp: [/trapped|locked|surge|power cut|choked|throat|breath|wires|mic|mirror|behind you|heartbeat|security|badge|3:17|server room/i],
-      soft:  [/shadow|whisper|cold|void|hiss|static|glitch|footsteps|watching/i]
-    };
-    function scareScore(text){
-      let s=0;
-      for(const r of SCARY_LEX.hard)  if(r.test(text)) s+=3;
-      for(const r of SCARY_LEX.sharp) if(r.test(text)) s+=2;
-      for(const r of SCARY_LEX.soft)  if(r.test(text)) s+=1;
-      return s;
+    function maybePhotoHauntTurn(){
+      if (Math.random() < PHOTO_CHANCE) {
+        jumpscare();
+      } else if (Math.random() < 0.35) {
+        screenWhiplashBurst();
+        if (Math.random() < 0.5) setTimeout(possessCursor, 140);
+      }
     }
-    function maybeHaunt(text){
-      const s = scareScore(text);
-      if (s >= 6) { jumpscare(); }
-      else if (s >= 4) { screenWhiplashBurst(); setTimeout(possessCursor, 120); }
-      else if (s >= 2 && Math.random()<0.5) { screenWhiplashBurst(); }
-      else if (Math.random()<0.15) { possessCursor(); }
+    function scheduleAmbientScares(){
+      const delay = 12000 + Math.random()*13000; // 12–25s
+      setTimeout(() => {
+        if (Math.random() < AMBIENT_PHOTO_CHANCE) jumpscare();
+        else if (Math.random() < AMBIENT_SHAKE_CHANCE) {
+          screenWhiplashBurst();
+          if (Math.random() < 0.5) setTimeout(possessCursor, 120);
+        }
+        scheduleAmbientScares();
+      }, delay);
+    }
+
+    /* ====== Choices helpers ====== */
+    function fallbackChoicesFrom(text){
+      const k = (text||'').toLowerCase();
+      const pool = [];
+      if(/lab|monitor|screen|server|rack|console/.test(k)) pool.push('Enter the server','Trace the monitor','Behind the racks');
+      if(/door|lock|room|hall|elevator|stairs/.test(k)) pool.push('Force the door','Follow the hallway','Take the stairs');
+      if(/voice|mic|audio|breath|heartbeat/.test(k)) pool.push('Trace the audio','Hold your breath','Match the heartbeat');
+      if(/mirror|reflection|glass|window/.test(k)) pool.push('Face the glass','Look sideways','Shatter the mirror');
+      if(/badge|security|log|time|3:17|alarm/.test(k)) pool.push('Audit the logs','Follow the badge','Return at 3 17');
+      if(pool.length<6) pool.push('Show the origin','Reveal the cost','Open the console','Cut the power','Silence the room','Follow the hum');
+      const uniq = [];
+      for(const p of pool){
+        const s = sanitizeChoice(p);
+        if(!recentChoiceMemory.includes(s) && !uniq.includes(s)) uniq.push(s);
+        if(uniq.length>=8) break;
+      }
+      return pickDistinct(uniq,3);
+    }
+    function pickDistinct(arr,n){
+      const out=[]; const copy=[...arr];
+      while(out.length<n && copy.length){
+        const i=Math.floor(Math.random()*copy.length);
+        out.push(copy.splice(i,1)[0]);
+      }
+      const pad = ['Go deeper','Change the channel','Step back','Follow the hum','Look left','Turn around','Lower the lights','Hold still'];
+      for(const p of pad){
+        if(out.length>=n) break;
+        const s = sanitizeChoice(p);
+        if(!recentChoiceMemory.includes(s) && !out.includes(s)) out.push(s);
+      }
+      return out.slice(0,n);
+    }
+    function arraysEqualCI(a,b){
+      if(!a||!b||a.length!==b.length) return false;
+      return a.map(x=>x.toLowerCase()).join('|') === b.map(x=>x.toLowerCase()).join('|');
     }
 
     /* ====== Story engine ====== */
@@ -350,38 +376,37 @@
         const parsed = safeParseJSON(raw);
         const story = sanitizeStory(parsed.story || raw);
 
-        // Get and sanitize choices
+        // sanitize and ensure 3 distinct choices
         let choices = dedupeChoices(Array.isArray(parsed.choices)?parsed.choices:[]);
-        // filter out anything in recent memory
         choices = choices.filter(c => !recentChoiceMemory.includes(c));
-        // if still not enough, regenerate from API once
-        if(choices.length===3 && arraysEqualCI(choices,lastChoices)){
-          choices = await regenerateChoices(lastChoices, story);
+
+        // If we didn't get 3, try regeneration once
+        if(choices.length !== 3 || arraysEqualCI(choices,lastChoices)){
+          const regen = await regenerateChoices(choices.length?choices:lastChoices, story);
+          if (regen && regen.length === 3) choices = regen;
         }
-        // if API still stubborn, build local fresh choices
-        if(!choices || choices.length<3){
-          const local = fallbackChoicesFrom(story);
-          choices = pickDistinct(local,3);
+        // If still not 3, local fallback
+        if(!choices || choices.length < 3){
+          choices = fallbackChoicesFrom(story);
         }
 
-        // commit
+        // Commit
         addMessage(story, 'spirit');
         history.push({role:'spirit', text: story});
         setChoices(choices);
 
-        // update memory of choices
         lastChoices = choices.slice(0,3);
-        recentChoiceMemory = recentChoiceMemory.concat(lastChoices).slice(-12);
+        recentChoiceMemory = recentChoiceMemory.concat(lastChoices).slice(-18);
 
         saveMemory();
         storyStatus.textContent = 'It waits…';
 
-        // haunt
-        maybeHaunt(story);
+        // Random haunt this turn
+        maybePhotoHauntTurn();
       }catch(err){
         addMessage('(error) '+String(err).slice(0,180), 'spirit');
         const local = fallbackChoicesFrom(history.at(-1)?.text || '');
-        setChoices(pickDistinct(local,3));
+        setChoices(local);
         storyStatus.textContent = 'It flickers…';
       }finally{
         isProcessing = false;
@@ -391,12 +416,15 @@
     async function regenerateChoices(prevChoices, latestStory){
       const sys = [
         "Return JSON ONLY like {\"choices\":[\"A\",\"B\",\"C\"]}.",
-        "Three NEW choices only; do NOT repeat any of these:",
-        prevChoices.join(', '),
+        "Three NEW choices. Do NOT repeat or paraphrase any of these:",
+        (prevChoices||[]).join(', ') || '(none)',
+        "Avoid RECENT ledger semantics too.",
+        "Map them to different axes among: ORIGIN, PLACE, METHOD, CONSEQUENCE.",
         "Each 1–5 words, letters/numbers/spaces only."
       ].join(' ');
       const convo = [
         {role:'system', content: sys},
+        {role:'system', content: "RECENT ledger: "+recentChoiceMemory.join(', ')},
         {role:'user', content: "Latest story context: "+latestStory}
       ];
       try{
@@ -408,16 +436,11 @@
       }catch{ return null; }
     }
 
-    function arraysEqualCI(a,b){
-      if(!a||!b||a.length!==b.length) return false;
-      return a.map(x=>x.toLowerCase()).join('|') === b.map(x=>x.toLowerCase()).join('|');
-    }
-
     async function choose(text){
       addMessage(text, 'user');
       history.push({role:'user', text});
       saveMemory();
-      if (/(trapped|power|surge|door|scream|mirror|server)/i.test(text) && Math.random()<0.4) {
+      if (/(trapped|power|surge|door|mirror|server|badge|logs|origin|cost)/i.test(text) && Math.random()<0.5) {
         screenWhiplashBurst();
       }
       await stepStory(text);
@@ -432,6 +455,7 @@
           setTimeout(async ()=>{
             openingScene.style.display='none';
             storyScreen.style.display='grid';
+            scheduleAmbientScares();
             if(history.length){
               history.forEach(m=>addMessage(m.text, m.role));
               setChoices(lastChoices.length?lastChoices:['How were you trapped','Show me the lab','Why can I hear you']);
